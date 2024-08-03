@@ -7,9 +7,12 @@ import ru.otus.hw.dao.QuestionDao;
 import java.io.FileNotFoundException;
 
 @RequiredArgsConstructor
+
 public class TestServiceImpl implements TestService {
 
     private final IOService ioService;
+
+    private final QuestionDao questionDao;
 
     @Override
     public void executeTest() {
@@ -17,5 +20,6 @@ public class TestServiceImpl implements TestService {
         ioService.printFormattedLine("Please answer the questions below%n");
 
         // Получить вопросы из дао и вывести их с вариантами ответов
+        questionDao.findAll();
     }
 }
