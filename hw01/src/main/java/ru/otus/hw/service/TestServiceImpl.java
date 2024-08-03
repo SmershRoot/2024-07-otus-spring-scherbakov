@@ -1,10 +1,7 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
-import ru.otus.hw.dao.CsvQuestionDao;
 import ru.otus.hw.dao.QuestionDao;
-
-import java.io.FileNotFoundException;
 
 @RequiredArgsConstructor
 
@@ -19,7 +16,13 @@ public class TestServiceImpl implements TestService {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
 
-        // Получить вопросы из дао и вывести их с вариантами ответов
-        questionDao.findAll();
+        var questions = questionDao.findAll();
+        questions.forEach(question -> {
+            ioService.printFormattedLine("%d. %s", questions.indexOf(question) + 1, question.text());
+            var answers = question.answers();
+            answers.forEach(answer -> {
+                ioService.printFormattedLine("- %d. %s", answers.indexOf(answer) + 1, answer.text());
+            });
+        });
     }
 }
