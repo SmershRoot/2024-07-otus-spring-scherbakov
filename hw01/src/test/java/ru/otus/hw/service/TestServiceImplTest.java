@@ -23,13 +23,6 @@ public class TestServiceImplTest {
 
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
-    private PrintStream printStream;
-
-    /**
-     * Мок для класса IOService.
-     */
-    private IOService ioService;
-
     /**
      * Мок для класса QuestionDao.
      */
@@ -42,8 +35,8 @@ public class TestServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        printStream = new PrintStream(outputStreamCaptor);
-        ioService = new StreamsIOService(printStream);
+        PrintStream printStream = new PrintStream(outputStreamCaptor);
+        IOService ioService = new StreamsIOService(printStream);
         questionDao = mock(QuestionDao.class);
         testService = new TestServiceImpl(ioService, questionDao);
     }
