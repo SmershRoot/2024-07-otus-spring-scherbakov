@@ -8,7 +8,6 @@ import ru.otus.hw.domain.Question;
 import java.util.List;
 
 @RequiredArgsConstructor
-
 public class TestServiceImpl implements TestService {
 
     private final IOService ioService;
