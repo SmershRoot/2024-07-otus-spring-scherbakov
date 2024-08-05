@@ -8,4 +8,4 @@
 
 ## Меню выполненных работ и их статус
 * Месяц 1
-    + ДЗ 1: [Тут будет ссылка на папку с ДЗ](https://otus.ru/lessons/javaspring/)  ![no_compleat](https://github.com/user-attachments/assets/a1365430-1e9a-4bd5-848d-ba86da64fea6) 
+    + ДЗ 1: [ПуллРеквест](https://github.com/SmershRoot/2024-07-otus-spring-scherbakov/pull/1)
