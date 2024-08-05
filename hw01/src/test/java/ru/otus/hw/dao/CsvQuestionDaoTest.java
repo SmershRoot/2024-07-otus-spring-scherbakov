@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+/**
+ * Тест для Дао-класса {@link CsvQuestionDao}
+ * <p>Не юнит-тест (т.к. задействовано файловое хранилище)</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class CsvQuestionDaoTest {
 
@@ -30,10 +34,10 @@ class CsvQuestionDaoTest {
     private static final List<String> TEST_ANSWER_NOT_CORRECT = List.of("Maxim Orlovsky", "Warren Buffett");
 
     @Mock
-    TestFileNameProvider fileNameProvider;
+    private TestFileNameProvider fileNameProvider;
 
     @InjectMocks
-    CsvQuestionDao csvQuestionDao;
+    private CsvQuestionDao csvQuestionDao;
 
     /**
      * Получение вопросов из файла. Файл используется не из main, т.к. тут мне нужен
