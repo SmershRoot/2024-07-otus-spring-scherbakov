@@ -21,7 +21,7 @@ public class CsvQuestionDao implements QuestionDao {
     public List<Question> findAll() {
         try (var inputStream = getClass().getResourceAsStream(fileNameProvider.getTestFileName())) {
             if (Objects.isNull(inputStream)) {
-                throw new QuestionReadException("Источник получения данных не доступен");
+                throw new QuestionReadException("The source of data is not available");
             }
             Reader reader = new InputStreamReader(inputStream);
             var questionDtos = new CsvToBeanBuilder<QuestionDto>(reader)
@@ -32,11 +32,11 @@ public class CsvQuestionDao implements QuestionDao {
                     .parse();
             return questionDtos.stream().map(QuestionDto::toDomainObject).toList();
         } catch (QuestionReadException e) {
-            throw new QuestionReadException(e.getMessage());
+            throw e;
         } catch (IOException e) {
-            throw new QuestionReadException("Ошибка взаимодействия с источником данных", e);
+            throw new QuestionReadException("Error interacting with data source", e);
         } catch (Exception e) {
-            throw new QuestionReadException("Ошибка чтения данных", e);
+            throw new QuestionReadException("Error reading data", e);
         }
     }
 }
