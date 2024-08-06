@@ -1,6 +1,7 @@
 package ru.otus.hw.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -8,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.PrintStream;
+import java.util.Random;
 
 import static org.mockito.Mockito.*;
 
@@ -29,18 +31,27 @@ class StreamsIOServiceTest {
     }
 
     /**
-     * Тест метода ioService.printFormattedLine должен выводить сообщение в консоль с параметрами
-     * <p>Посчитал что нормальное поведение если текст перед вызовом printf может быть в будущем модифицирован,
-     * например приведение к верхнему регистру или добавление двоеточия перед переносом.
-     * Потому проверяю на anyString(), а не на testString + "%n"</p>
+     * Тест метода ioService.printFormattedLine должен выводить сообщение в консоль с параметрами с учетом модификаций сообщения
      */
-    @Test
     @DisplayName(value = "Тест метода ioService.printFormattedLine должен выводить сообщение в консоль с параметрами")
+    @RepeatedTest(5)
     void printFormattedLine() {
-        String testString = "Message for test";
-        String string_arg = "string_arg";
-        int int_arg = 1;
-        ioService.printFormattedLine(testString, string_arg, int_arg);
-        verify(printStream, times(1)).printf(anyString(), eq(string_arg), eq(int_arg));
+        String testString = generateRandomString(100);
+        String stringArg = generateRandomString(10);
+        int intArg = new Random().nextInt();
+        ioService.printFormattedLine(testString, stringArg, intArg);
+        verify(printStream, times(1)).printf(testString + "%n", stringArg, intArg);
+    }
+
+    /**
+     * Генерация случайной строки заданной длины
+     *
+     * @param length - длина строки
+     * @return - случайная строка
+     */
+    private String generateRandomString(int length) {
+        byte[] array = new byte[length];
+        new Random().nextBytes(array);
+        return new String(array);
     }
 }
