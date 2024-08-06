@@ -1,16 +1,14 @@
 package ru.otus.hw.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -19,33 +17,23 @@ import static org.mockito.Mockito.*;
  *
  *<p>Класс для тестирования сервиса TestServiceImpl.</p>
  */
+@ExtendWith(MockitoExtension.class)
 public class TestServiceImplTest {
 
-    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+    @Mock
+    private IOService ioService;
 
-    /**
-     * Мок для класса QuestionDao.
-     */
+    @Mock
     private QuestionDao questionDao;
 
-    /**
-     * Экземпляр класса TestServiceImpl.
-     */
+    @InjectMocks
     private TestServiceImpl testService;
-
-    @BeforeEach
-    public void setUp() {
-        PrintStream printStream = new PrintStream(outputStreamCaptor);
-        IOService ioService = new StreamsIOService(printStream);
-        questionDao = mock(QuestionDao.class);
-        testService = new TestServiceImpl(ioService, questionDao);
-    }
 
     /**
      * Тест метода executeTest с вопросами.
      */
     @Test
-    public void executeTest_withQuestions() {
+    public void executeTestWithQuestions() {
         List<String> testQuestions = List.of("Question 1", "Question 2");
         List<String> testAnswers = List.of("Answer 1", "Answer 2", "Answer 3", "Answer 4");
 
@@ -55,12 +43,11 @@ public class TestServiceImplTest {
         ));
 
         testService.executeTest();
-
         for(String testQuestion : testQuestions){
-            assertTrue(outputStreamCaptor.toString().contains(testQuestion),"Вывод данных не содержит вопроса: " + testQuestion);
+            verify(ioService, times(1)).printFormattedLine(anyString() ,any(), eq(testQuestion));
         }
         for(String testAnswer : testAnswers){
-            assertTrue(outputStreamCaptor.toString().contains(testAnswer),"Вывод данных не содержит варианта ответа: " + testAnswer);
+            verify(ioService, times(1)).printFormattedLine(anyString() ,any(), eq(testAnswer));
         }
     }
 
