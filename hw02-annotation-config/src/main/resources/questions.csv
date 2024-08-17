@@ -1,6 +1,6 @@
 # Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
 What data types are not available in Java?;int%false|float%false|string%true|unknown%true|Double%false
 What is the extension of Java source code files?;.javac%false|.java%true|.class%false|.classpath%false
-Write yes?;yes%true
+Write yes?;yes%true|no%false
 Who are the main hosts of the investment show 'Money never sleeps'?;Maxim Orlovsky%false|Vasily Oleynik%true|Irina Akhmadullina%true|Warren Buffett%false
 Bean scopes in Spring:;singleton%false|prototype%false|request%false|all listed%true
