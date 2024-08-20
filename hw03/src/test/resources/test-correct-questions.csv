@@ -1,5 +1,4 @@
 # Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
-# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
 What data types are not available in Java?;int%false|float%false|string%true|unknown%true|Double%false
 What is the extension of Java source code files?;.javac%false|.java%true|.class%false|.classpath%false
 Write yes?;yes%true|no%false

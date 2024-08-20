@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 @Service
 public class StreamsIOService implements IOService {
@@ -48,11 +50,7 @@ public class StreamsIOService implements IOService {
         for (int i = 0; i < MAX_ATTEMPTS; i++) {
             try {
                 var stringValue = scanner.nextLine();
-                int intValue = Integer.parseInt(stringValue);
-                if (intValue < min || intValue > max) {
-                    throw new IllegalArgumentException();
-                }
-                return intValue;
+                return parseIntForRange(stringValue, min, max);
             } catch (IllegalArgumentException e) {
                 printLine(errorMessage);
             }
@@ -65,4 +63,39 @@ public class StreamsIOService implements IOService {
         printLine(prompt);
         return readIntForRange(min, max, errorMessage);
     }
+
+    @Override
+    public List<Integer> readIntListByForRange(int min, int max, String errorMessage) {
+        for (int i = 0; i < MAX_ATTEMPTS; i++) {
+            try {
+                var stringValue = scanner.nextLine();
+                var intValues = Stream.of(stringValue.trim().split("[,\\s]+"))
+                        .map(splitStringValue -> parseIntForRange(splitStringValue, min, max))
+                        .toList();
+                if (intValues.isEmpty()) {
+                    throw new IllegalArgumentException();
+                }
+
+                return intValues;
+            } catch (IllegalArgumentException e) {
+                printLine(errorMessage);
+            }
+        }
+        throw new IllegalArgumentException("Error during reading int value");
+    }
+
+    @Override
+    public List<Integer> readIntListByForRangeWithPrompt(int min, int max, String prompt, String errorMessage) {
+        printLine(prompt);
+        return readIntListByForRange(min, max, errorMessage);
+    }
+
+    private int parseIntForRange(String stringValue, int min, int max) {
+        int intValue = Integer.parseInt(stringValue);
+        if (intValue < min || intValue > max) {
+            throw new IllegalArgumentException();
+        }
+        return intValue;
+    }
+
 }
