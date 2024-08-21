@@ -13,8 +13,8 @@ public interface LocalizedIOService extends LocalizedMessagesService, IOService 
 
     int readIntForRangeWithPromptLocalized(int min, int max, String promptCode, String errorMessageCode);
 
-    List<Integer> readIntListByForRange(int min, int max, String errorMessage);
+    List<Integer> readIntListByForRangeLocalized(int min, int max, String errorMessage);
 
-    List<Integer> readIntListByForRangeWithPrompt(int min, int max, String prompt, String errorMessage);
+    List<Integer> readIntListByForRangeWithPromptLocalized(int min, int max, String prompt, String errorMessage);
 
 }

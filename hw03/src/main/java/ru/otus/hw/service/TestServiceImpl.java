@@ -37,7 +37,7 @@ public class TestServiceImpl implements TestService {
 
     private boolean askQuestion(int numberQuestion, Question question) {
         printQuestion(numberQuestion, question);
-        var studentAnswer = ioService.readIntListByForRangeWithPrompt(
+        var studentAnswer = ioService.readIntListByForRangeWithPromptLocalized(
                 1, question.answers().size(),
                 "TestService.answer.input", "TestService.answer.input.error");
         return checkAnswer(question, studentAnswer);

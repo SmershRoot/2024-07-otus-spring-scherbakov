@@ -44,6 +44,16 @@ public class LocalizedIOServiceImpl implements LocalizedIOService {
     }
 
     @Override
+    public List<Integer> readIntListByForRange(int min, int max, String errorMessage) {
+        return ioService.readIntListByForRange(min, max, errorMessage);
+    }
+
+    @Override
+    public List<Integer> readIntListByForRangeWithPrompt(int min, int max, String prompt, String errorMessage) {
+        return ioService.readIntListByForRangeWithPrompt(min, max, prompt, errorMessage);
+    }
+
+    @Override
     public void printLineLocalized(String code) {
         ioService.printLine(localizedMessagesService.getMessage(code));
     }
@@ -72,20 +82,22 @@ public class LocalizedIOServiceImpl implements LocalizedIOService {
     }
 
     @Override
-    public String getMessage(String code, Object... args) {
-        return localizedMessagesService.getMessage(code, args);
-    }
-
-    @Override
-    public List<Integer> readIntListByForRange(int min, int max, String errorMessageCode) {
+    public List<Integer> readIntListByForRangeLocalized(int min, int max, String errorMessageCode) {
         return ioService.readIntListByForRange(min, max, localizedMessagesService.getMessage(errorMessageCode));
     }
 
     @Override
-    public List<Integer> readIntListByForRangeWithPrompt(int min, int max, String promptCode, String errorMessageCode) {
+    public List<Integer> readIntListByForRangeWithPromptLocalized(
+            int min, int max, String promptCode, String errorMessageCode
+    ) {
         return ioService.readIntListByForRangeWithPrompt(
                 min, max, localizedMessagesService.getMessage(promptCode),
                 localizedMessagesService.getMessage(errorMessageCode));
+    }
+
+    @Override
+    public String getMessage(String code, Object... args) {
+        return localizedMessagesService.getMessage(code, args);
     }
 
 }
