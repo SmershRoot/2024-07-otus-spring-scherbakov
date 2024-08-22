@@ -37,7 +37,7 @@ class TestServiceImplTest {
                 new Question(testQuestions.get(0), List.of(new Answer(testAnswers.get(0), true), new Answer(testAnswers.get(1), false))),
                 new Question(testQuestions.get(1), List.of(new Answer(testAnswers.get(2), false), new Answer(testAnswers.get(3), true)))
         ));
-        when(ioService.readIntListByForRangeWithPrompt(anyInt(), anyInt(), anyString(), anyString())).thenReturn(List.of(1));
+        when(ioService.readIntListByForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString())).thenReturn(List.of(1));
 
         TestResult result = testService.executeTestFor(new Student("Smersh", "Root"));
         assertEquals(1, result.getRightAnswersCount(), "Not correct result for RightAnswersCount");
