@@ -1,0 +1,6 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Какие типы данных недоступны в Java?;int%false|float%false|string%true|unknown%true|Double%false
+Какое расширение у файлов исходного кода Java?;.javac%false|.java%true|.class%false|.classpath%false
+Напишите yes?;yes%true|no%false
+Кто главные ведущие инвестиционного шоу «Деньги никогда не спят»?;Максим Орловский%false|Василий Олейник%true|Ирина Ахмадуллина%true|Уоррен Баффет%false
+Области действия Bean в Spring:;singleton%false|prototype%false|request%false|все перечисленные%true
