@@ -3,9 +3,9 @@ package ru.otus.hw.dao;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.exceptions.QuestionReadException;
@@ -17,13 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Тест для Дао-класса {@link CsvQuestionDao}
  * <p>Не юнит-тест (т.к. задействовано файловое хранилище)</p>
  */
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(classes = {CsvQuestionDao.class})
 class CsvQuestionDaoTest {
 
     private static final String TEST_CORRECT_FILE_NAME = "test-correct-questions.csv";
@@ -38,10 +37,10 @@ class CsvQuestionDaoTest {
 
     private static final List<String> TEST_ANSWER_NOT_CORRECT = List.of("Maxim Orlovsky", "Warren Buffett");
 
-    @Mock
+    @MockBean
     private TestFileNameProvider fileNameProvider;
 
-    @InjectMocks
+    @Autowired
     private CsvQuestionDao csvQuestionDao;
 
     /**
