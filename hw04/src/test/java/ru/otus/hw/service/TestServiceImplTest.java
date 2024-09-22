@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {TestServiceImpl.class})
 class TestServiceImplTest {
 
     @MockBean

@@ -5,15 +5,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.otus.hw.domain.Student;
+import ru.otus.hw.security.LoginContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {StudentServiceImpl.class})
 class StudentServiceImplTest {
 
     @MockBean
     private LocalizedIOService ioService;
+
+    @MockBean
+    private LoginContext loginContext;
 
     @Autowired
     private StudentServiceImpl studentService;
