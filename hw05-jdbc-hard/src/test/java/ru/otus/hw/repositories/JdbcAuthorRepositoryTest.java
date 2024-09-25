@@ -1,7 +1,10 @@
 package ru.otus.hw.repositories;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 
 import java.util.Optional;
@@ -10,6 +13,9 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("Репозиторий на основе Jdbc для работы с авторами")
+@JdbcTest
+@Import({JdbcAuthorRepository.class})
 class JdbcAuthorRepositoryTest {
 
     @Autowired
