@@ -1,6 +1,7 @@
 package ru.otus.hw.repositories;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -32,7 +33,7 @@ public class JdbcAuthorRepository implements AuthorRepository {
         );
 
         if (authors.size() > 1) {
-            throw new RuntimeException("More than one author found");
+            throw new IncorrectResultSizeDataAccessException(authors.size());
         }
 
         return authors.isEmpty() ? Optional.empty() : Optional.of(authors.get(0));
