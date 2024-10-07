@@ -3,7 +3,7 @@ package ru.otus.hw.repositories;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 
@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Репозиторий на основе Jdbc для работы с авторами")
-@JdbcTest
-@Import({JdbcAuthorRepository.class})
-class JdbcAuthorRepositoryTest {
+@DisplayName("Репозиторий на основе Jpa для работы с авторами")
+@DataJpaTest
+@Import({JpaAuthorRepository.class})
+class JpaAuthorRepositoryTest {
 
     @Autowired
-    private JdbcAuthorRepository repository;
+    private JpaAuthorRepository repository;
 
     @Test
     void findAll() {
@@ -38,7 +38,7 @@ class JdbcAuthorRepositoryTest {
 
     @Test
     void findById() {
-        Optional<Author> author = repository.findById(1L);
+        Optional<Author> author = repository. findById(1L);
         assertTrue(author.isPresent(), "Author is empty");
         assertEquals(1, author.get().getId(), "Author is not id 1");
         assertEquals("Author_1", author.get().getFullName(), "Author_1 is not id 1");

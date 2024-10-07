@@ -9,3 +9,5 @@ databaseChangeLog:
       file: db/changelog/v0.0.1/2024-09-22--genres-add-data.sql
   - include:
       file: db/changelog/v0.0.1/2024-09-22--books_genres-add-data.sql
+  - includeAll:
+      path: db/changelog/v0.0.2/
