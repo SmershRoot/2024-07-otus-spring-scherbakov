@@ -10,14 +10,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.FetchType;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"book"})
+@ToString(exclude = {"book"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
