@@ -90,15 +90,7 @@ public class JdbcBookRepository implements BookRepository {
                 .collect(Collectors.toMap(Book::getId, book -> book));
         var genresMap = genres.stream()
                 .collect(Collectors.toMap(Genre::getId, genre -> genre));
-        var groupRelations = relations.stream()
-                .collect(Collectors.groupingBy(
-                        BookGenreRelation::bookId,
-                        Collectors.mapping(r -> genresMap.get(r.genreId), Collectors.toList()))
-                );
-
-        groupRelations.forEach((bookId, listRelations) -> {
-            booksMap.get(bookId).getGenres().addAll(listRelations);
-        });
+        relations.forEach(r -> booksMap.get(r.bookId).getGenres().add(genresMap.get(r.genreId)));
     }
 
     private Book insert(Book book) {
