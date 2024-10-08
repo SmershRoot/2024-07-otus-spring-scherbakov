@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.models.Author;
+import ru.otus.hw.GenerateData;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.repositories.JpaAuthorRepository;
@@ -19,7 +19,6 @@ import ru.otus.hw.repositories.JpaGenreRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -34,9 +33,9 @@ class BookServiceImplTest {
     @Autowired
     private BookService service;
 
+    @ParameterizedTest
     @DisplayName("должен загружать книгу по id")
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    @ParameterizedTest
     @MethodSource("getDbBooks")
     void findById(Book expectedBook) {
         var actualBook = service.findById(expectedBook.getId());
@@ -64,8 +63,8 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
+        var dbAuthors = GenerateData.getDbAuthors();
+        var dbGenres = GenerateData.getDbGenres();
         var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
         var returnedBook = service.insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
@@ -85,8 +84,8 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
+        var dbAuthors = GenerateData.getDbAuthors();
+        var dbGenres = GenerateData.getDbGenres();
         var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
@@ -120,31 +119,9 @@ class BookServiceImplTest {
         assertThat(service.findById(1L)).isEmpty();
     }
 
-    private static List<Author> getDbAuthors() {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Author(id, "Author_" + id))
-                .toList();
-    }
 
-    private static List<Genre> getDbGenres() {
-        return IntStream.range(1, 7).boxed()
-                .map(id -> new Genre(id, "Genre_" + id))
-                .toList();
-    }
-
-    private static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
-                .map(id -> new Book(id,
-                        "BookTitle_" + id,
-                        dbAuthors.get(id - 1),
-                        dbGenres.subList((id - 1) * 2, (id - 1) * 2 + 2)
-                ))
-                .toList();
-    }
 
     private static List<Book> getDbBooks() {
-        var dbAuthors = getDbAuthors();
-        var dbGenres = getDbGenres();
-        return getDbBooks(dbAuthors, dbGenres);
+        return GenerateData.getDbBooks();
     }
 }
