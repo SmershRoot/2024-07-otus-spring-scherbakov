@@ -21,9 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис на основе Jpa для работы с комментариями")
 @DataJpaTest
-@Import({CommentServiceImpl.class, BookServiceImpl.class,
-        JpaCommentRepository.class, JpaBookRepository.class,
-        JpaGenreRepository.class, JpaAuthorRepository.class})
+@Import({CommentServiceImpl.class, BookServiceImpl.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class CommentServiceImplTest {
 

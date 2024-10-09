@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.GenerateData;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
-import ru.otus.hw.repositories.JpaAuthorRepository;
-import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaGenreRepository;
+import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Сервис на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({BookServiceImpl.class,
-        JpaBookRepository.class, JpaGenreRepository.class, JpaAuthorRepository.class})
+@Import({BookServiceImpl.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceImplTest {
 

@@ -15,11 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Репозиторий на основе Jpa для работы с авторами")
 @DataJpaTest
-@Import({JpaAuthorRepository.class})
 class JpaAuthorRepositoryTest {
 
     @Autowired
-    private JpaAuthorRepository repository;
+    private AuthorRepository repository;
 
     @Test
     void findAll() {
