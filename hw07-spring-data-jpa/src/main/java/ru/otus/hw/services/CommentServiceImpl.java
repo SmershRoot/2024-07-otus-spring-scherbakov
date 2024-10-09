@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository repository;
@@ -29,7 +28,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public List<Comment> findByBookId(long bookId) {
-        return repository.findByBookId(bookId);
+        var book = bookService.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        return repository.findAllByBook(book);
     }
 
     @Override
