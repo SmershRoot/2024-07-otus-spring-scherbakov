@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @ShellComponent
 @RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentCommands {
 
     private final CommentService commentService;

@@ -13,7 +13,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository repository;

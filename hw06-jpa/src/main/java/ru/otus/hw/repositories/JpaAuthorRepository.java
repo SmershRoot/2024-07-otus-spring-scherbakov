@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JpaAuthorRepository implements AuthorRepository {
 
     @PersistenceContext

@@ -21,11 +21,6 @@ import lombok.ToString;
 import java.util.List;
 
 
-/*@NamedEntityGraph(name = "books-graph",
-        attributeNodes = {
-                @NamedAttributeNode("author"),
-                @NamedAttributeNode("genres")
-        })*/
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = {"author", "genres"})
