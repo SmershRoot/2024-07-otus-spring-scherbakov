@@ -16,6 +16,7 @@ import ru.otus.hw.models.Genre;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
@@ -24,6 +25,9 @@ class JpaBookRepositoryTest {
 
     @Autowired
     private JpaBookRepository repository;
+    
+    @Autowired
+    private TestEntityManager em;
 
     private List<Author> dbAuthors;
 
@@ -68,9 +72,7 @@ class JpaBookRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(repository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
+        assertThat(findById(returnedBook.getId()))
                 .isEqualTo(returnedBook);
     }
 
@@ -80,9 +82,7 @@ class JpaBookRepositoryTest {
         var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
-        assertThat(repository.findById(expectedBook.getId()))
-                .isPresent()
-                .get()
+        assertThat(findById(expectedBook.getId()))
                 .isNotEqualTo(expectedBook);
 
         var returnedBook = repository.save(expectedBook);
@@ -90,21 +90,23 @@ class JpaBookRepositoryTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(repository.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
+        assertThat(findById(expectedBook.getId()))
                 .isEqualTo(returnedBook);
     }
 
     @DisplayName("должен удалять книгу по id ")
     @Test
     void shouldDeleteBook() {
-        assertThat(repository.findById(1L)).isPresent();
+        assertThat(findById(1L)).isNotNull();
         repository.deleteById(1L);
-        assertThat(repository.findById(1L)).isEmpty();
+        assertThat(findById(1L)).isNull();
     }
 
     private static List<Book> getDbBooks() {
         return GenerateData.getDbBooks();
+    }
+
+    private Book findById(long id){
+        return em.find(Book.class, id);
     }
 }

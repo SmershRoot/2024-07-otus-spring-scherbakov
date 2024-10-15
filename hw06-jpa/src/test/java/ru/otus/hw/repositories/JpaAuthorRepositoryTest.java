@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import({JpaAuthorRepository.class})
 class JpaAuthorRepositoryTest {
-
+    
     @Autowired
     private JpaAuthorRepository repository;
-
+    
     @Test
     void findAll() {
         var authors = repository.findAll();
@@ -38,7 +38,7 @@ class JpaAuthorRepositoryTest {
 
     @Test
     void findById() {
-        Optional<Author> author = repository. findById(1L);
+        Optional<Author> author = repository.findById(1L);
         assertTrue(author.isPresent(), "Author is empty");
         assertEquals(1, author.get().getId(), "Author is not id 1");
         assertEquals("Author_1", author.get().getFullName(), "Author_1 is not id 1");
