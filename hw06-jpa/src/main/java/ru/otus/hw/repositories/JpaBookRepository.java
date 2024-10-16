@@ -52,7 +52,6 @@ public class JpaBookRepository implements BookRepository {
     public EntityGraph<?> getGraph() {
         var graph = em.createEntityGraph(Book.class);
         graph.addAttributeNodes("author");
-        graph.addAttributeNodes("genres");
         return graph;
     }
 

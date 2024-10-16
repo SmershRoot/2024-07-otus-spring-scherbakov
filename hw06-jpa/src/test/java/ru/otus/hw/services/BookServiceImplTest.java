@@ -11,8 +11,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.GenerateData;
-import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
+import ru.otus.hw.dto.BookDTO;
+import ru.otus.hw.dto.GenreDTO;
+import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.mapper.BookMapperImpl;
 import ru.otus.hw.repositories.JpaAuthorRepository;
 import ru.otus.hw.repositories.JpaBookRepository;
 import ru.otus.hw.repositories.JpaGenreRepository;
@@ -25,8 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Сервис на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({BookServiceImpl.class,
-        JpaBookRepository.class, JpaGenreRepository.class, JpaAuthorRepository.class})
+@Import({
+        BookServiceImpl.class,
+        JpaBookRepository.class, JpaGenreRepository.class, JpaAuthorRepository.class,
+        BookMapperImpl.class
+})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceImplTest {
 
@@ -36,13 +41,12 @@ class BookServiceImplTest {
     @ParameterizedTest
     @DisplayName("должен загружать книгу по id")
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    @MethodSource("getDbBooks")
-    void findById(Book expectedBook) {
+    @MethodSource("getDbBookDTOs")
+    void findById(BookDTO expectedBook) {
         var actualBook = service.findById(expectedBook.getId());
         assertThat(actualBook).isPresent()
                 .get()
                 .isEqualTo(expectedBook);
-
 
         assertDoesNotThrow(() -> actualBook.get().getAuthor().getFullName(), "Ошибка загрузки автора");
         assertDoesNotThrow(() -> actualBook.get().getGenres().get(0).getName(), "Ошибка загрузки жанра");
@@ -52,7 +56,7 @@ class BookServiceImplTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findAll() {
         var actualBooks = service.findAll();
-        var expectedBooks = getDbBooks();
+        var expectedBooks = getDbBookDTOs();
 
         assertThat(actualBooks).containsExactlyElementsOf(expectedBooks);
         actualBooks.forEach(System.out::println);
@@ -63,12 +67,12 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
-        var dbAuthors = GenerateData.getDbAuthors();
-        var dbGenres = GenerateData.getDbGenres();
-        var expectedBook = new Book(0, "BookTitle_10500", dbAuthors.get(0),
+        var dbAuthors = GenerateData.getDbAuthorDTOs();
+        var dbGenres = GenerateData.getDbGenreDTOs();
+        var expectedBook = new BookDTO(0, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
         var returnedBook = service.insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
-                expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet()));
+                expectedBook.getGenres().stream().map(GenreDTO::getId).collect(Collectors.toSet()));
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison()
@@ -84,9 +88,9 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
-        var dbAuthors = GenerateData.getDbAuthors();
-        var dbGenres = GenerateData.getDbGenres();
-        var expectedBook = new Book(1L, "BookTitle_10500", dbAuthors.get(2),
+        var dbAuthors = GenerateData.getDbAuthorDTOs();
+        var dbGenres = GenerateData.getDbGenreDTOs();
+        var expectedBook = new BookDTO(1L, "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
         assertThat(service.findById(expectedBook.getId()))
@@ -98,7 +102,7 @@ class BookServiceImplTest {
                 expectedBook.getId(),
                 expectedBook.getTitle(),
                 expectedBook.getAuthor().getId(),
-                expectedBook.getGenres().stream().map(Genre::getId).collect(Collectors.toSet())
+                expectedBook.getGenres().stream().map(GenreDTO::getId).collect(Collectors.toSet())
         );
 
         assertThat(returnedBook).isNotNull()
@@ -119,9 +123,7 @@ class BookServiceImplTest {
         assertThat(service.findById(1L)).isEmpty();
     }
 
-
-
-    private static List<Book> getDbBooks() {
-        return GenerateData.getDbBooks();
+    private static List<BookDTO> getDbBookDTOs() {
+        return GenerateData.getDbBookDTOs();
     }
 }
