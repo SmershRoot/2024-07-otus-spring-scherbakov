@@ -3,8 +3,11 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.mapper.CommentMapper;
 import ru.otus.hw.models.Comment;
+import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 
 import java.time.LocalDate;
@@ -17,26 +20,28 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository repository;
 
-    private final BookService bookService;
+    private final BookRepository bookRepository;
+
+    private final CommentMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Comment> findById(long id) {
-        return repository.findById(id);
+    public Optional<CommentDTO> findById(long id) {
+        return repository.findById(id).map(mapper::toCommentDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> findByBookId(long bookId) {
-        var book = bookService.findById(bookId)
+    public List<CommentDTO> findByBookId(long bookId) {
+        var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-        return repository.findAllByBook(book);
+        return repository.findAllByBook(book).stream().map(mapper::toCommentDTO).toList();
     }
 
     @Override
     @Transactional
-    public Comment insert(long bookId, String text, String author) {
-        var book = bookService.findById(bookId)
+    public CommentDTO insert(long bookId, String text, String author) {
+        var book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
         Comment comment = new Comment();
@@ -45,15 +50,17 @@ public class CommentServiceImpl implements CommentService {
         comment.setText(text);
         comment.setAuthor(author);
 
-        return repository.save(comment);
+        comment = repository.save(comment);
+        return mapper.toCommentDTO(comment);
     }
 
     @Override
     @Transactional
-    public Comment update(long id, String text) {
-        var comment = findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+    public CommentDTO update(long id, String text) {
+        var comment = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
         comment.setText(text);
-        return repository.save(comment);
+        comment = repository.save(comment);
+        return mapper.toCommentDTO(comment);
     }
 
     @Override

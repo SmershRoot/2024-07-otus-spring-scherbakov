@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @ShellComponent
 @RequiredArgsConstructor
-//@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentCommands {
 
     private final CommentService commentService;
@@ -38,13 +37,13 @@ public class CommentCommands {
     }
 
     @ShellMethod(value = "Update comment", key = "cupd")
-    public String updateBook(long id, String text) {
+    public String update(long id, String text) {
         var comment = commentService.update(id, text);
         return commentConverter.commentToString(comment);
     }
 
     @ShellMethod(value = "Delete comment by id", key = "cdel")
-    public void deleteBook(long id) {
+    public void delete(long id) {
         commentService.deleteById(id);
     }
 }

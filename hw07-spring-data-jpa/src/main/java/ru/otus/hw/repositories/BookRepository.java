@@ -13,7 +13,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Override
     @Nonnull
-    @EntityGraph(attributePaths = {"author", "genres"})
+    @EntityGraph(attributePaths = {"author"})
     List<Book> findAll();
 
     @Override
