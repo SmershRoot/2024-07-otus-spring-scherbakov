@@ -1,4 +1,4 @@
-package ru.otus.hw.changelog;
+package ru.otus.hw.db.testdata.changelog;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
@@ -23,8 +23,6 @@ public class initData {
 
     private final List<Genre> genres = new ArrayList<>();
 
-    private final List<Book> books = new ArrayList<>();
-
     @ChangeSet(order = "000", id = "dropDB", author = "scherbakov_a", runAlways = true)
     public void dropDB(MongoDatabase database) {
         database.drop();
@@ -48,6 +46,7 @@ public class initData {
 
     @ChangeSet(order = "003", id = "books-add-data", author = "scherbakov_a", runAlways = true)
     public void initBooks(BookRepository repository) {
+        List<Book> books = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             books.add(
                     new Book(String.valueOf(i), "BookTitle_" + i, authors.get(i - 1),
@@ -58,14 +57,4 @@ public class initData {
         repository.saveAll(books);
     }
 
-    @ChangeSet(order = "004", id = "comments-add-data", author = "scherbakov_a", runAlways = true)
-    public void initComments(CommentRepository repository) {
-        var comments = new ArrayList<Comment>();
-        comments.add(new Comment("1", books.get(0), "Comment_1_1" , LocalDate.of(2024, 1, 1), "Author_1"));
-        comments.add(new Comment("2", books.get(1), "Comment_2" , LocalDate.of(2024, 1, 2), "Author_2"));
-        comments.add(new Comment("3", books.get(2), "Comment_3" , LocalDate.of(2024, 1, 3), "Author_3"));
-        comments.add(new Comment("4", books.get(0), "Comment_1_2" , LocalDate.of(2024, 1, 4), "Author_1"));
-        comments.add(new Comment("5", books.get(0), "Comment_1_3" , LocalDate.of(2024, 1, 4), "Author_2"));
-        repository.saveAll(comments);
-    }
 }

@@ -13,10 +13,19 @@ de:
 
 mongock:
   # runner-type: "ApplicationRunner" # default
-  runner-type: "InitializingBean"
+  runner-type: "ApplicationRunner"
   change-logs-scan-package:
     - ru.otus.hw.changelog
   mongo-db:
     write-concern:
       journal: false
     read-concern: local
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG

@@ -22,7 +22,7 @@
         <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
         <checkstyle.version>10.15.0</checkstyle.version>
         <mongock.version>4.3.8</mongock.version>
-        <flapdoodle.version>4.6.1</flapdoodle.version>
+        <flapdoodle.version>4.7.0</flapdoodle.version>
         <reflections.version>0.10.2</reflections.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <checkstyle.config.url>
