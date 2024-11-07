@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
         CommentServiceImpl.class, BookServiceImpl.class,
         CommentMapperImpl.class, BookMapperImpl.class
 })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class CommentServiceImplTest {
 
     @Autowired
@@ -60,6 +59,7 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
         var dbBook = GenerateData.getDbBookDTOs().get(0);
 
@@ -81,6 +81,7 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
         var dbBook = GenerateData.getDbBookDTOs().stream().filter(book -> book.getId().equals("1")).findFirst().get();
         var expectedComment = new CommentDTO("1", "NEW COMMENT", LocalDate.parse("2024-01-01"), "Author_1");
@@ -111,6 +112,7 @@ class CommentServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void deleteById() {
         assertThat(service.findById("1")).isPresent();
         service.deleteById("1");

@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
         BookServiceImpl.class,
         BookMapperImpl.class
 })
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookServiceImplTest {
 
     @Autowired
@@ -56,6 +55,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
         var dbAuthors = GenerateData.getDbAuthorDTOs();
         var dbGenres = GenerateData.getDbGenreDTOs();
@@ -76,6 +76,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
         var dbAuthors = GenerateData.getDbAuthorDTOs();
         var dbGenres = GenerateData.getDbGenreDTOs();
@@ -105,6 +106,7 @@ class BookServiceImplTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void deleteById() {
         assertThat(service.findById("1")).isPresent();
         service.deleteById("1");

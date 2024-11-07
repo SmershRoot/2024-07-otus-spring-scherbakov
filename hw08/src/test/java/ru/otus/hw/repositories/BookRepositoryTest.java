@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий для работы с книгами ")
 @DataMongoTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BookRepositoryTest {
 
     @Autowired
@@ -60,6 +59,7 @@ class BookRepositoryTest {
 
     @DisplayName("должен сохранять новую книгу")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldSaveNewBook() {
         var expectedBook = new Book(null, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
@@ -76,6 +76,7 @@ class BookRepositoryTest {
 
     @DisplayName("должен сохранять измененную книгу")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldSaveUpdatedBook() {
         var expectedBook = new Book("1", "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
@@ -98,6 +99,7 @@ class BookRepositoryTest {
 
     @DisplayName("должен удалять книгу по id ")
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteBook() {
         assertThat(repository.findById("1")).isPresent();
         repository.deleteById("1");
