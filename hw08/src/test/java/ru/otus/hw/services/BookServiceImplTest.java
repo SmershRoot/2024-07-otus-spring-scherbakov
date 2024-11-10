@@ -12,6 +12,7 @@ import ru.otus.hw.GenerateData;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
 import ru.otus.hw.mapper.BookMapperImpl;
+import ru.otus.hw.repositories.CommentRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,9 @@ class BookServiceImplTest {
 
     @Autowired
     private BookService service;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @ParameterizedTest
     @DisplayName("должен загружать книгу по id")
@@ -111,6 +115,8 @@ class BookServiceImplTest {
         assertThat(service.findById("1")).isPresent();
         service.deleteById("1");
         assertThat(service.findById("1")).isEmpty();
+        assertThat(commentRepository.findAll().stream()
+                .anyMatch(comment -> comment.getBook().getId().equals("1"))).isFalse();
     }
 
     private static List<BookDTO> getDbBookDTOs() {
