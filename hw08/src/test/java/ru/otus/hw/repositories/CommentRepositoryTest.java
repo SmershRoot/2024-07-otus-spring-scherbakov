@@ -6,7 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import ru.otus.hw.GenerateData;
+import ru.otus.hw.TestData;
 import ru.otus.hw.models.Book;
 
 import java.util.List;
@@ -25,7 +25,7 @@ class CommentRepositoryTest {
     @MethodSource("getDbBooks")
     void findAllByBook(Book expectedBook){
         var actualComments = repository.findAllByBook(expectedBook);
-        var expectedComments = GenerateData.getDbComments()
+        var expectedComments = TestData.getDbComments()
                 .stream().filter(c -> c.getBook().equals(expectedBook))
                 .toList();
 
@@ -33,7 +33,7 @@ class CommentRepositoryTest {
     }
 
     private static List<Book> getDbBooks() {
-        return GenerateData.getDbBooks();
+        return TestData.getDbBooks();
     }
 
 }

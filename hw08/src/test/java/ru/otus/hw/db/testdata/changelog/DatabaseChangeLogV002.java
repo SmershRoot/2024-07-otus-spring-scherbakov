@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 @ChangeLog(order = "002")
-public class v002InitData {
+public class DatabaseChangeLogV002 {
 
     @ChangeSet(order = "004", id = "comments-add-data", author = "scherbakov_a", runAlways = true)
     public void initComments(CommentRepository repository, BookRepository bookRepository) {

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.otus.hw.GenerateData;
+import ru.otus.hw.TestData;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
 import ru.otus.hw.mapper.BookMapperImpl;
@@ -61,8 +61,8 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
-        var dbAuthors = GenerateData.getDbAuthorDTOs();
-        var dbGenres = GenerateData.getDbGenreDTOs();
+        var dbAuthors = TestData.getDbAuthorDTOs();
+        var dbGenres = TestData.getDbGenreDTOs();
         var expectedBook = new BookDTO(null, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
         var returnedBook = service.insert(expectedBook.getTitle(), expectedBook.getAuthor().getId(),
@@ -82,8 +82,8 @@ class BookServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
-        var dbAuthors = GenerateData.getDbAuthorDTOs();
-        var dbGenres = GenerateData.getDbGenreDTOs();
+        var dbAuthors = TestData.getDbAuthorDTOs();
+        var dbGenres = TestData.getDbGenreDTOs();
         var expectedBook = new BookDTO("1", "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
@@ -120,6 +120,6 @@ class BookServiceImplTest {
     }
 
     private static List<BookDTO> getDbBookDTOs() {
-        return GenerateData.getDbBookDTOs();
+        return TestData.getDbBookDTOs();
     }
 }

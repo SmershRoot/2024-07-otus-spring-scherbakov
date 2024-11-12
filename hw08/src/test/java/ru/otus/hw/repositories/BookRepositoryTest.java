@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.otus.hw.GenerateData;
+import ru.otus.hw.TestData;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -32,9 +32,9 @@ class BookRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        dbAuthors = GenerateData.getDbAuthors();
-        dbGenres = GenerateData.getDbGenres();
-        dbBooks = GenerateData.getDbBooks(dbAuthors, dbGenres);
+        dbAuthors = TestData.getDbAuthors();
+        dbGenres = TestData.getDbGenres();
+        dbBooks = TestData.getDbBooks(dbAuthors, dbGenres);
     }
 
     @DisplayName("должен загружать книгу по id")
@@ -107,6 +107,6 @@ class BookRepositoryTest {
     }
 
     private static List<Book> getDbBooks() {
-        return GenerateData.getDbBooks();
+        return TestData.getDbBooks();
     }
 }

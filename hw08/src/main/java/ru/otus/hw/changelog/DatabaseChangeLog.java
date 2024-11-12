@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ChangeLog(order = "000")
-public class initData {
+public class DatabaseChangeLog {
 
     private final List<Author> authors = new ArrayList<>();
 

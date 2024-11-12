@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Класс для генерации тестовых данных
+ * Класс с тестовыми данными
  */
-public class GenerateData {
+public class TestData {
 
     public static List<Comment> getDbComments() {
         var result = new ArrayList<Comment>();

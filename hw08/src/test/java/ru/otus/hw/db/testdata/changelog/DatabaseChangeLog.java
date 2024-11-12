@@ -6,18 +6,15 @@ import com.mongodb.client.MongoDatabase;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Genre;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @ChangeLog(order = "000")
-public class initData {
+public class DatabaseChangeLog {
 
     private final List<Author> authors = new ArrayList<>();
 
