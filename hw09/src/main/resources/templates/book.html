@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+</head>
+<body>
+    <form th:object="${book}" th:method="(${book.id}?'post':'put')" th:action="@{/book/{id}(id=${book.id})}">
+        <a th:href="@{/book}">All books</a><br/>
+
+        <div th:if="${#fields.hasErrors()}">
+            <span class="validationError">
+                Please correct the problems below and resubmit.
+            </span>
+        </div>
+
+        <h1 th:text="*{title}"></h1>
+
+        <label>Title: </label>
+        <input type="text" th:field="*{title}" required/>
+        <span class="validationError"
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}">Title Error</span>
+        <br/>
+        <label>Author: </label>
+        <select th:field="*{author}" required>
+            <option th:each="author : ${all_authors}" th:value="${author}"
+                    th:text="${author.fullName}"/>
+        </select>
+        <br/>
+        <select th:field="*{genres}" multiple required>
+            <option th:each="genre : ${all_genres}" th:value="${genre}" th:text="${genre.name}"
+                    th:selected="${#lists.contains(book.genres, genre)}"/>
+        </select>
+        <br/>
+        <input type="submit" value="Save"/>
+    </form>
+</body>
+</html>

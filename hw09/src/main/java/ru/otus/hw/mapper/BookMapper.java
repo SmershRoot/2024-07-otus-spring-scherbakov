@@ -9,6 +9,4 @@ public interface BookMapper {
 
     BookDTO toBookDTO(Book book);
 
-    Book toBook(BookDTO bookDTO);
-
 }
