@@ -9,4 +9,6 @@ public interface AuthorMapper {
 
     AuthorDTO toAuthorDTO(Author author);
 
+    Author toAuthor(AuthorDTO authorDTO);
+
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CommentDTO {
 
-    private long id;
+    private Long id;
 
     private String text;
 

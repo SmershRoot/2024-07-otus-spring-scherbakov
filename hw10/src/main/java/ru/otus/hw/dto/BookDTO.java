@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BookDTO {
 
-    private long id;
+    private Long id;
 
     private String title;
 
