@@ -3,6 +3,7 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.BookBasicDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
@@ -32,6 +33,12 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public Optional<BookDTO> findById(long id) {
         return bookRepository.findById(id).map(mapper::toBookDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<BookBasicDTO> findBasicById(long id) {
+        return bookRepository.findById(id).map(mapper::toBookBasicDTO);
     }
 
     @Override

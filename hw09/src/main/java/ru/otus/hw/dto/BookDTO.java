@@ -16,7 +16,7 @@ public class BookDTO {
     private long id;
 
     @NotNull
-    @NotBlank(message="Title is required")
+    @NotBlank(message = "Title is required")
     private String title;
 
     @NotNull(message = "Author is required")

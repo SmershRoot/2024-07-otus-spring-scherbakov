@@ -5,7 +5,7 @@
     <title>Book</title>
 </head>
 <body>
-    <form th:object="${book}" th:method="(${book.id}?'post':'put')" th:action="@{/book/{id}(id=${book.id})}">
+    <form th:object="${book}" th:method="post" th:action="@{/books/save(id=${book.id})}">
         <a th:href="@{/book}">All books</a><br/>
 
         <div th:if="${#fields.hasErrors()}">
@@ -22,16 +22,33 @@
               th:if="${#fields.hasErrors('title')}"
               th:errors="*{title}">Title Error</span>
         <br/>
+
         <label>Author: </label>
-        <select th:field="*{author}" required>
-            <option th:each="author : ${all_authors}" th:value="${author}"
-                    th:text="${author.fullName}"/>
-        </select>
+        <label>
+            <select th:field="*{authorId}" required>
+                <option th:each="author : ${all_authors}"
+                        th:value="${author.id}"
+                        th:text="${author.fullName}"
+                        th:selected="${author.id == book.authorId}"></option>
+            </select>
+        </label>
         <br/>
-        <select th:field="*{genres}" multiple required>
-            <option th:each="genre : ${all_genres}" th:value="${genre}" th:text="${genre.name}"
+        <fieldset>
+            <legend>Genres:</legend>
+            <ul>
+                <li th:each="genre : ${all_genres}">
+                    <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}"
+                           th:checked="${#lists.contains(book.genreIds, genre.id)}"/>
+                    <label th:for="${#ids.prev('genreIds')}"
+                           th:text="${genre.name}">genreName</label>
+                </li>
+            </ul>
+        </fieldset>
+
+        <!--select th:field="*{genreIds}" multiple required>
+            <option th:each="genre : ${all_genres}" th:value="${genre.id}" th:text="${genre.name}"
                     th:selected="${#lists.contains(book.genres, genre)}"/>
-        </select>
+        </select-->
         <br/>
         <input type="submit" value="Save"/>
     </form>
