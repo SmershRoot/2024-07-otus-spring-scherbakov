@@ -1,5 +1,8 @@
 package ru.otus.hw.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +17,10 @@ public class BookBasicDTO {
 
     private String title;
 
+    @NotNull(message = "Author is required")
     private Long authorId;
 
+    @Size(min = 1, message = "Genres is required")
+    @NotEmpty(message = "Genres is required")
     private List<Long> genreIds = new ArrayList<>();
 }

@@ -20,7 +20,7 @@
 <body>
 <h1>Welcome to the library</h1>
 <img class="image_library" th:src="@{/images/OtusLibrary.jpeg}"/>
-<a th:href="@{/book/0}">Create new book</a>
+<a th:href="@{/books/0}">Create new book</a>
 <table>
     <tr>
         <th>#</th>
@@ -39,7 +39,7 @@
                 th:text="${genre.name} + (${!iterGenre.last}?';':'')">${genre.name}</li>
         </ul></td>
         <td>
-            <form th:action="@{/book/{id}(id=${book.id})}" th:method="get">
+            <form th:action="@{/books/{id}(id=${book.id})}" th:method="get">
                 <button>Edit</button>
             </form>
         </td>

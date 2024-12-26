@@ -4,13 +4,12 @@ import ru.otus.hw.dto.BookBasicDTO;
 import ru.otus.hw.dto.BookDTO;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public interface BookService {
-    Optional<BookDTO> findById(long id);
+    BookDTO findById(long id);
 
-    Optional<BookBasicDTO> findBasicById(long id);
+    BookBasicDTO findBasicById(long id);
 
     List<BookDTO> findAll();
 

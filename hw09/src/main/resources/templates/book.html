@@ -6,7 +6,7 @@
 </head>
 <body>
     <form th:object="${book}" th:method="post" th:action="@{/books/save(id=${book.id})}">
-        <a th:href="@{/book}">All books</a><br/>
+        <a th:href="@{/books}">All books</a><br/>
 
         <div th:if="${#fields.hasErrors()}">
             <span class="validationError">
@@ -44,11 +44,6 @@
                 </li>
             </ul>
         </fieldset>
-
-        <!--select th:field="*{genreIds}" multiple required>
-            <option th:each="genre : ${all_genres}" th:value="${genre.id}" th:text="${genre.name}"
-                    th:selected="${#lists.contains(book.genres, genre)}"/>
-        </select-->
         <br/>
         <input type="submit" value="Save"/>
     </form>

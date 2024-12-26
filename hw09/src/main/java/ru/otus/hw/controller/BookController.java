@@ -38,10 +38,13 @@ public class BookController {
         return "books";
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/books/{id}")
     public String read(@PathVariable Long id, Model model) {
-        var book = bookService.findBasicById(id);
-        model.addAttribute("book", book.orElse(new BookBasicDTO()));
+        if (id == 0) {
+            model.addAttribute("book", new BookBasicDTO());
+        } else {
+            model.addAttribute("book", bookService.findBasicById(id));
+        }
         model.addAttribute("all_authors", authorService.findAll());
         model.addAttribute("all_genres", genreService.findAll());
 
@@ -54,8 +57,17 @@ public class BookController {
             @Valid @ModelAttribute("book") BookBasicDTO book,
             BindingResult bindingResult
     ) {
-        bookService.update(book.getId(), book.getTitle(), book.getAuthorId(),
-                new HashSet<>(book.getGenreIds()));
+        if (bindingResult.hasErrors()) {
+            return "book";
+        }
+
+        if (id == 0) {
+            bookService.insert(book.getTitle(), book.getAuthorId(),
+                    new HashSet<>(book.getGenreIds()));
+        } else {
+            bookService.update(book.getId(), book.getTitle(), book.getAuthorId(),
+                    new HashSet<>(book.getGenreIds()));
+        }
         return "redirect:/books";
     }
 

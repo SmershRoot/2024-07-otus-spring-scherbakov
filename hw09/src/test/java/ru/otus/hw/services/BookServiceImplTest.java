@@ -13,13 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.GenerateData;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.dto.GenreDTO;
+import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapperImpl;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Сервис на основе Jpa для работы с книгами ")
 @DataJpaTest
@@ -39,12 +40,10 @@ class BookServiceImplTest {
     @MethodSource("getDbBookDTOs")
     void findById(BookDTO expectedBook) {
         var actualBook = service.findById(expectedBook.getId());
-        assertThat(actualBook).isPresent()
-                .get()
-                .isEqualTo(expectedBook);
+        assertThat(actualBook).isEqualTo(expectedBook);
 
-        assertDoesNotThrow(() -> actualBook.get().getAuthor().getFullName(), "Ошибка загрузки автора");
-        assertDoesNotThrow(() -> actualBook.get().getGenres().get(0).getName(), "Ошибка загрузки жанра");
+        assertDoesNotThrow(() -> actualBook.getAuthor().getFullName(), "Ошибка загрузки автора");
+        assertDoesNotThrow(() -> actualBook.getGenres().get(0).getName(), "Ошибка загрузки жанра");
     }
 
     @Test
@@ -74,10 +73,7 @@ class BookServiceImplTest {
                 .ignoringFields("id")
                 .isEqualTo(expectedBook);
 
-        assertThat(service.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        assertThat(service.findById(returnedBook.getId())).isEqualTo(returnedBook);
     }
 
     @Test
@@ -88,10 +84,7 @@ class BookServiceImplTest {
         var expectedBook = new BookDTO(1L, "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
-        assertThat(service.findById(expectedBook.getId()))
-                .isPresent()
-                .get()
-                .isNotEqualTo(expectedBook);
+        assertThat(service.findById(expectedBook.getId())).isNotEqualTo(expectedBook);
 
         var returnedBook = service.update(
                 expectedBook.getId(),
@@ -104,18 +97,16 @@ class BookServiceImplTest {
                 .matches(book -> book.getId() > 0)
                 .usingRecursiveComparison().isEqualTo(expectedBook);
 
-        assertThat(service.findById(returnedBook.getId()))
-                .isPresent()
-                .get()
-                .isEqualTo(returnedBook);
+        assertThat(service.findById(returnedBook.getId())).isEqualTo(returnedBook);
     }
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void deleteById() {
-        assertThat(service.findById(1L)).isPresent();
+        assertThat(service.findById(1L)).isNotNull();
         service.deleteById(1L);
-        assertThat(service.findById(1L)).isEmpty();
+        var thrown = assertThrows(EntityNotFoundException.class, () -> service.findById(1L));
+        assertEquals("Not found book", thrown.getMessage());
     }
 
     private static List<BookDTO> getDbBookDTOs() {
