@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Book</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
 <body>
     <form th:object="${book}" th:method="post" th:action="@{/books/save(id=${book.id})}">
@@ -35,6 +36,9 @@
         <br/>
         <fieldset>
             <legend>Genres:</legend>
+            <span class="validationError"
+                  th:if="${#fields.hasErrors('genreIds')}"
+                  th:errors="*{genreIds}">Genres error</span>
             <ul>
                 <li th:each="genre : ${all_genres}">
                     <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}"

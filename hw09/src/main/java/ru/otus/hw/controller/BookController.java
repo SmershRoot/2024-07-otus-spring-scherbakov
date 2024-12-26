@@ -55,9 +55,12 @@ public class BookController {
     public String save(
             @RequestParam Long id,
             @Valid @ModelAttribute("book") BookBasicDTO book,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("all_authors", authorService.findAll());
+            model.addAttribute("all_genres", genreService.findAll());
             return "book";
         }
 
