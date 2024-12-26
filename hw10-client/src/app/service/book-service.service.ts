@@ -8,7 +8,7 @@ export class BookServiceService {
   private bookUrl: string;
 
   constructor(private http: HttpClient) {
-      this.bookUrl = 'http://localhost:8080/library-api/book';
+      this.bookUrl = '/library-api/book';
   }
 
     public findAll(): Observable<Book[]> {
