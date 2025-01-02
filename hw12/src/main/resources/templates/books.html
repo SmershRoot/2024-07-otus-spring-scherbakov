@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Otus library</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <style type="text/css">
+        table, th, td {
+            border: 1px solid black;
+        }
+        ul.complex_list {
+            display: flex;
+        }
+        .complex_list li {
+            margin: 5px;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Welcome to the library</h1>
+<img class="image_library" th:src="@{/images/OtusLibrary.jpeg}"/>
+<a th:href="@{/books/0}">Create new book</a>
+<table>
+    <tr>
+        <th>#</th>
+        <th>TITLE</th>
+        <th>AUTHOR</th>
+        <th>GENRES</th>
+        <th>EDIT</th>
+        <th>DELETE</th>
+    </tr>
+    <tr th:each="book,iterBook : ${books}">
+        <td th:text="${iterBook.count}">Index</td>
+        <td th:text="${book.title}">TITLE</td>
+        <td th:text="${book.author.fullName}">AUTHOR</td>
+        <td><ul class="complex_list">
+            <li th:each="genre,iterGenre : ${book.genres}"
+                th:text="${genre.name} + (${!iterGenre.last}?';':'')">${genre.name}</li>
+        </ul></td>
+        <td>
+            <form th:action="@{/books/{id}(id=${book.id})}" th:method="get">
+                <button>Edit</button>
+            </form>
+        </td>
+        <td>
+            <form th:action="@{/books/delete(id=${book.id})}" th:method="delete">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

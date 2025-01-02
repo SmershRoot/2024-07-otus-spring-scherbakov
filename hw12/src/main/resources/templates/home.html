@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+ <html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Otus library</title>
+      <link rel="stylesheet" th:href="@{/styles.css}" />
+  </head>
+  <body>
+    <h1>Welcome to the library</h1>
+    <img class="image_library" th:src="@{/images/OtusLibrary.jpeg}"/>
+
+    <ul class="home_menu, flex_list">
+        <li><a th:href="@{/books}">All books</a><br/></li>
+        <li><a th:href="@{/books/0}">Create new book</a><br/></li>
+    </ul>
+  </body>
+ </html>
