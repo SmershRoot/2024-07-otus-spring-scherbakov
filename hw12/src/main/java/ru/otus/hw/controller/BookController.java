@@ -4,9 +4,15 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +39,13 @@ public class BookController {
 
     @GetMapping("/books")
     public String readAll(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        var isAdmin = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+
         var books = bookService.findAll();
         model.addAttribute("books", books);
         return "books";
@@ -52,6 +65,7 @@ public class BookController {
     }
 
     @PostMapping("/books/save")
+    @PreAuthorize("hasRole('ADMIN')")
     public String save(
             @RequestParam Long id,
             @Valid @ModelAttribute("book") BookBasicDTO book,
@@ -75,6 +89,7 @@ public class BookController {
     }
 
     @PostMapping("/books/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(
             @RequestParam Long id,
             @RequestParam(name = "_method", required = false) String method,
@@ -85,9 +100,12 @@ public class BookController {
         return "redirect:/books";
     }
 
-    public void delete(@PathVariable Long id) {
+    private void delete(@PathVariable Long id) {
         bookService.deleteById(id);
     }
 
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleException(AccessDeniedException e) {
+        return "forbidden";
+    }
 }

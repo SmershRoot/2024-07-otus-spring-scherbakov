@@ -20,15 +20,15 @@
 <body>
 <h1>Welcome to the library</h1>
 <img class="image_library" th:src="@{/images/OtusLibrary.jpeg}"/>
-<a th:href="@{/books/0}">Create new book</a>
+<a th:if="${isAdmin}" th:href="@{/books/0}">Create new book</a>
 <table>
     <tr>
         <th>#</th>
         <th>TITLE</th>
         <th>AUTHOR</th>
         <th>GENRES</th>
-        <th>EDIT</th>
-        <th>DELETE</th>
+        <th  th:if="${isAdmin}">EDIT</th>
+        <th  th:if="${isAdmin}">DELETE</th>
     </tr>
     <tr th:each="book,iterBook : ${books}">
         <td th:text="${iterBook.count}">Index</td>
@@ -38,12 +38,12 @@
             <li th:each="genre,iterGenre : ${book.genres}"
                 th:text="${genre.name} + (${!iterGenre.last}?';':'')">${genre.name}</li>
         </ul></td>
-        <td>
+        <td  th:if="${isAdmin}">
             <form th:action="@{/books/{id}(id=${book.id})}" th:method="get">
                 <button>Edit</button>
             </form>
         </td>
-        <td>
+        <td  th:if="${isAdmin}">
             <form th:action="@{/books/delete(id=${book.id})}" th:method="delete">
                 <button type="submit">Delete</button>
             </form>
