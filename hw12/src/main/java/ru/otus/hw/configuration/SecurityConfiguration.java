@@ -9,14 +9,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import ru.otus.hw.configuration.constants.Constants;
 
 @Configuration
 @EnableWebSecurity
@@ -37,7 +34,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/", "/images/**", "/public/**").permitAll()
-                        .requestMatchers(HttpMethod.POST).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST).hasRole(Constants.Authority.ADMIN)
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .exceptionHandling((exceptionHandling) ->
@@ -54,26 +51,4 @@ public class SecurityConfiguration {
         return new CustomAccessDeniedHandler();
     }
 
-    @Bean
-    public UserDetailsService users() {
-        UserDetails user = User
-                .builder()
-                .username("user")
-                .password("$2a$04$QN6eLV125r1wb26FnG/ZzejoF1xcg1nZ49aWMI6VZ4IzgoGW7E/yy")
-                .roles("USER")
-                .build();
-        UserDetails admin = User
-                .builder()
-                .username("admin")
-                .password("$2a$04$QN6eLV125r1wb26FnG/ZzejoF1xcg1nZ49aWMI6VZ4IzgoGW7E/yy")
-                .roles("USER", "ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, user);
-    }
-
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService);
-//    }
 }

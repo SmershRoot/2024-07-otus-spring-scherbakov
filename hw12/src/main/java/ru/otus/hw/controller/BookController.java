@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.hw.configuration.constants.Constants;
 import ru.otus.hw.dto.BookBasicDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.services.AuthorService;
@@ -39,16 +40,18 @@ public class BookController {
 
     @GetMapping("/books")
     public String readAll(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        var isAdmin = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(a -> a.equals("ROLE_ADMIN"));
-        model.addAttribute("isAdmin", isAdmin);
-
         var books = bookService.findAll();
         model.addAttribute("books", books);
+        model.addAttribute("isAdmin", isAdmin());
         return "books";
+    }
+
+    private boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(a -> a.equals(Constants.Authority.ROLE_ADMIN));
     }
 
     @GetMapping("/books/{id}")
@@ -65,7 +68,7 @@ public class BookController {
     }
 
     @PostMapping("/books/save")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(Constants.Authority.PREAUTHORIZE_ADMIN)
     public String save(
             @RequestParam Long id,
             @Valid @ModelAttribute("book") BookBasicDTO book,
@@ -89,7 +92,7 @@ public class BookController {
     }
 
     @PostMapping("/books/delete")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize(Constants.Authority.PREAUTHORIZE_ADMIN)
     public String delete(
             @RequestParam Long id,
             @RequestParam(name = "_method", required = false) String method,
