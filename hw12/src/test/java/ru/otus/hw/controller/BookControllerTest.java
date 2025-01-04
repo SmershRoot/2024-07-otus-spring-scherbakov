@@ -4,8 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.GenerateData;
+import ru.otus.hw.configuration.SecurityConfiguration;
+import ru.otus.hw.configuration.constants.Constants;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookBasicDTO;
 import ru.otus.hw.dto.BookDTO;
@@ -15,18 +20,19 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BookController.class)
+@Import(SecurityConfiguration.class)
 class BookControllerTest {
 
     @Autowired
@@ -42,6 +48,12 @@ class BookControllerTest {
     GenreService genreService;
 
     @Test
+    public void testWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void testHomePage() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
@@ -50,6 +62,7 @@ class BookControllerTest {
     }
 
     @Test
+    @WithMockUser
     public void readAll() throws Exception {
         var books = getDbBookDTOs();
         when(bookService.findAll()).thenReturn(books);
@@ -67,7 +80,35 @@ class BookControllerTest {
     }
 
     @Test
-    public void read() throws Exception {
+    public void readAllWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/books"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    public void readWithAdmin() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+        when(bookService.findBasicById(1)).thenReturn(getBookBasicDTO(book));
+        when(authorService.findAll()).thenReturn(getDbAuthorDTOs());
+        when(genreService.findAll()).thenReturn(getDbGenreDTOs());
+
+        mockMvc.perform(get("/books/1")
+                .with(user("admin").authorities(new SimpleGrantedAuthority(Constants.Authority.ROLE_ADMIN))))
+                .andExpect(status().isOk())
+                .andExpectAll(
+                        content().string(containsString(book.getTitle())),
+                        model().attribute("book", getBookBasicDTO(book)),
+                        model().attribute("all_authors", getDbAuthorDTOs()),
+                        model().attribute("all_genres", getDbGenreDTOs())
+                )
+                .andExpect(view().name("book"));
+    }
+
+    @Test
+    @WithMockUser
+    public void readWithUser() throws Exception {
         var books = getDbBookDTOs();
         var book = books.get(0);
         when(bookService.findBasicById(1)).thenReturn(getBookBasicDTO(book));
@@ -86,11 +127,19 @@ class BookControllerTest {
     }
 
     @Test
+    public void readWithoutAuthentication() throws Exception {
+        mockMvc.perform(get("/books/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
     public void readForCreate() throws Exception {
         when(authorService.findAll()).thenReturn(getDbAuthorDTOs());
         when(genreService.findAll()).thenReturn(getDbGenreDTOs());
 
-        mockMvc.perform(get("/books/0"))
+        mockMvc.perform(get("/books/0")
+                .with(user("admin").authorities(new SimpleGrantedAuthority(Constants.Authority.ROLE_ADMIN))))
                 .andExpect(status().isOk())
                 .andExpectAll(
                         model().attribute("book", new BookBasicDTO()),
@@ -101,14 +150,15 @@ class BookControllerTest {
     }
 
     @Test
-    public void create() throws Exception {
+    public void createWithAdmin() throws Exception {
         var books = getDbBookDTOs();
         var book = books.get(0);
         var newBook = getBookBasicDTO(book);
 
         mockMvc.perform(post("/books/save")
                 .param("id", "0")
-                .flashAttr("book", newBook))
+                .flashAttr("book", newBook)
+                .with(user("admin").authorities(new SimpleGrantedAuthority(Constants.Authority.ROLE_ADMIN))))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
         verify(bookService).insert(
@@ -119,14 +169,42 @@ class BookControllerTest {
     }
 
     @Test
-    public void update() throws Exception {
+    @WithMockUser
+    public void createWithUser() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+        var newBook = getBookBasicDTO(book);
+
+        mockMvc.perform(post("/books/save")
+                        .param("id", "0")
+                        .flashAttr("book", newBook))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/forbidden"));
+    }
+
+    @Test
+    public void createWithoutAuthentication() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+        var newBook = getBookBasicDTO(book);
+
+        mockMvc.perform(post("/books/save")
+                        .param("id", "0")
+                        .flashAttr("book", newBook))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    public void updateWithAdmin() throws Exception {
         var books = getDbBookDTOs();
         var book = books.get(0);
         var newBook = getBookBasicDTO(book);
 
         mockMvc.perform(post("/books/save")
                         .param("id", String.valueOf(newBook.getId()))
-                        .flashAttr("book", newBook))
+                        .flashAttr("book", newBook)
+                .with(user("admin").authorities(new SimpleGrantedAuthority(Constants.Authority.ROLE_ADMIN))))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
         verify(bookService).update(
@@ -138,17 +216,70 @@ class BookControllerTest {
     }
 
     @Test
-    public void delete() throws Exception {
+    @WithMockUser
+    public void updateWithUser() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+        var newBook = getBookBasicDTO(book);
+
+        mockMvc.perform(post("/books/save")
+                        .param("id", String.valueOf(newBook.getId()))
+                        .flashAttr("book", newBook))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/forbidden"));
+    }
+
+    @Test
+    public void updateWithoutAuthentication() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+        var newBook = getBookBasicDTO(book);
+
+        mockMvc.perform(post("/books/save")
+                        .param("id", String.valueOf(newBook.getId()))
+                        .flashAttr("book", newBook))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
+    }
+
+    @Test
+    public void deleteWithAdmin() throws Exception {
         var books = getDbBookDTOs();
         var book = books.get(0);
 
         mockMvc.perform(post("/books/delete")
                 .param("id", String.valueOf(book.getId()))
-                .param("_method", "delete"))
+                .param("_method", "delete")
+                        .with(user("admin").authorities(new SimpleGrantedAuthority(Constants.Authority.ROLE_ADMIN))))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
 
         verify(bookService).deleteById(book.getId());
+    }
+
+    @Test
+    @WithMockUser
+    public void deleteWithUser() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+
+        mockMvc.perform(post("/books/delete")
+                        .param("id", String.valueOf(book.getId()))
+                        .param("_method", "delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/forbidden"));
+    }
+
+    @Test
+    public void deleteWithoutAuthentication() throws Exception {
+        var books = getDbBookDTOs();
+        var book = books.get(0);
+
+        mockMvc.perform(post("/books/delete")
+                        .param("id", String.valueOf(book.getId()))
+                        .param("_method", "delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("**/login"));
     }
 
     private static BookBasicDTO getBookBasicDTO(BookDTO dto) {
