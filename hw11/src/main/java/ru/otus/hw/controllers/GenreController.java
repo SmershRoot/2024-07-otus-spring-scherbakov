@@ -18,7 +18,7 @@ public class GenreController {
     GenreService service;
 
     @GetMapping("/genre")
-    public List<GenreDTO> read(){
+    public List<GenreDTO> read() {
         return service.readAll();
     }
 
