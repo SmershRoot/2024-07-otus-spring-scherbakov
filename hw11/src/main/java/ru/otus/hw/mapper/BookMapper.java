@@ -2,6 +2,7 @@ package ru.otus.hw.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.AuthorDTO;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.models.Author;

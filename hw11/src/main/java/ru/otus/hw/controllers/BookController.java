@@ -4,54 +4,65 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookDTO;
-import ru.otus.hw.services.BookService;
-
-import java.util.List;
+import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.BookRepository;
 
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookController {
 
-    BookService service;
+    private final BookMapper mapper;
+
+    private final BookRepository repository;
 
     @GetMapping("/book")
-    public List<BookDTO> read() {
-        return service.readAll();
+    public Flux<BookDTO> read() {
+        return repository.findAll().map(mapper::toBookDTO);
     }
 
     @GetMapping("/book/{id}")
-    public BookDTO readById(
+    public Mono<BookDTO> readById(
             @PathVariable String id
     ) {
-        return service.readById(id);
+        return findById(id).map(mapper::toBookDTO);
     }
 
     @PostMapping("/book")
-    public BookDTO create(
+    public Mono<BookDTO> create(
             @RequestBody @Valid BookDTO book
     ) {
-        return service.create(book);
+        var entity = mapper.toBook(book);
+        var mono = repository.save(entity);
+        return mono.map(mapper::toBookDTO);
     }
 
-    @PostMapping("/book/{id}")
-    public BookDTO update(
+    @PutMapping("/book/{id}")
+    public Mono<BookDTO> update(
             @PathVariable String id,
             @RequestBody @Valid BookDTO book
     ) {
-        return service.update(id, book);
+        var entity = findById(id);
+        return entity.flatMap(e ->  {
+            mapper.updateBookFromDto(e, book);
+            return repository.save(e);
+        }).map(mapper::toBookDTO);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
-        service.deleteById(id);
+        repository.deleteById(id);
     }
 
+
+    public Mono<Book> findById(String id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(new EntityNotFoundException("Book with id %s not found".formatted(id))));
+    }
 }
