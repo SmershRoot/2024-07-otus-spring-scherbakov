@@ -12,7 +12,7 @@ de:
         version: 4.0.2
 
 mongock:
-  #  runner-type: "ApplicationRunner" # default
+#  runner-type: "ApplicationRunner" # default
   runner-type: "InitializingBean"
   change-logs-scan-package:
     - ru.otus.hw.changelog
