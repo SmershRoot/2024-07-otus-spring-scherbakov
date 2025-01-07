@@ -58,7 +58,7 @@ public class BookController {
         }).map(mapper::toBookDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/book/{id}")
     public void delete(@PathVariable String id) {
         repository.deleteById(id);
     }
