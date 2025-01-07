@@ -64,7 +64,7 @@ public class BookController {
     }
 
 
-    public Mono<Book> findById(String id) {
+    private Mono<Book> findById(String id) {
         return repository.findById(id)
                 .switchIfEmpty(Mono.error(new EntityNotFoundException("Book with id %s not found".formatted(id))));
     }
