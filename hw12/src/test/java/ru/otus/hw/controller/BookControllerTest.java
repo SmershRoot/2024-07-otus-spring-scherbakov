@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.otus.hw.GenerateData;
+import ru.otus.hw.TestData;
 import ru.otus.hw.configuration.SecurityConfiguration;
 import ru.otus.hw.configuration.constants.Constants;
 import ru.otus.hw.dto.AuthorDTO;
@@ -292,14 +292,14 @@ class BookControllerTest {
     }
 
     private static List<BookDTO> getDbBookDTOs() {
-        return GenerateData.getDbBookDTOs();
+        return TestData.getDbBookDTOs();
     }
 
     private static List<AuthorDTO> getDbAuthorDTOs() {
-        return GenerateData.getDbAuthorDTOs();
+        return TestData.getDbAuthorDTOs();
     }
 
     private static List<GenreDTO> getDbGenreDTOs() {
-        return GenerateData.getDbGenreDTOs();
+        return TestData.getDbGenreDTOs();
     }
 }

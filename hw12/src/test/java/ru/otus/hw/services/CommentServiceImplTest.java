@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.GenerateData;
+import ru.otus.hw.TestData;
 import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.mapper.BookMapperImpl;
 import ru.otus.hw.mapper.CommentMapperImpl;
@@ -47,7 +47,7 @@ class CommentServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void findByBookId() {
-        var dbCommentIds = GenerateData.getDbComments().stream()
+        var dbCommentIds = TestData.getDbComments().stream()
                 .filter(comment -> comment.getBook().getId() == 1)
                 .map(Comment::getId)
                 .toList();
@@ -66,7 +66,7 @@ class CommentServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void insert() {
-        var dbBook = GenerateData.getDbBookDTOs().get(0);
+        var dbBook = TestData.getDbBookDTOs().get(0);
 
         var expectedComment = new CommentDTO(0, "NEW COMMENT", LocalDate.now(), "AUTHOR_TEST");
         var returnedComment  = service.insert(dbBook.getId(), "NEW COMMENT", "AUTHOR_TEST");
@@ -88,7 +88,7 @@ class CommentServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
-        var dbBook = GenerateData.getDbBookDTOs().stream().filter(book -> book.getId() == 1).findFirst().get();
+        var dbBook = TestData.getDbBookDTOs().stream().filter(book -> book.getId() == 1).findFirst().get();
         var expectedComment = new CommentDTO(1, "NEW COMMENT", LocalDate.parse("2024-01-01"), "Author_1");
 
         assertThat(service.findById(1))
@@ -125,7 +125,7 @@ class CommentServiceImplTest {
     }
 
     private static List<CommentDTO> getDbCommentDTOs() {
-        return GenerateData.getDbCommentDTOs();
+        return TestData.getDbCommentDTOs();
     }
 
 }
