@@ -11,7 +11,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.otus.hw.TestData;
 import ru.otus.hw.dto.BookDTO;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
