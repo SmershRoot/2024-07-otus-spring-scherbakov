@@ -8,7 +8,7 @@ import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 
 @Service
-public class AclServiceCommentService extends AclServiceWrapperServiceImpl{
+public class AclServiceCommentService extends AclServiceWrapperServiceImpl {
 
     private final BookMapper mapper;
 

@@ -4,7 +4,12 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.*;
+import org.springframework.security.acls.model.MutableAcl;
+import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,11 +40,11 @@ public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
     @Override
     public void addPermission(Sid sid, Object object, boolean sidIsOwner, Permission ... permissions) {
         MutableAcl acl = getAcl(object);
-        if(sidIsOwner){
+        if (sidIsOwner) {
             acl.setOwner(sid);
         }
 
-        for(Permission permission : permissions){
+        for (Permission permission : permissions) {
             acl.insertAce(acl.getEntries().size(), permission, sid, true);
         }
         mutableAclService.updateAcl(acl);
