@@ -28,6 +28,6 @@ public class AclServiceCommentService extends AclServiceWrapperServiceImpl {
         var dtoBook = mapper.toBookDTO(book);
         MutableAcl acl = super.getAcl(dtoBook);
         var owner = acl.getOwner();
-        super.addPermission(owner, object, false, BasePermission.READ, BasePermission.DELETE);
+        super.addPermission(owner, object, BasePermission.READ, BasePermission.DELETE);
     }
 }

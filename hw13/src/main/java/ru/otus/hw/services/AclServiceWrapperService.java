@@ -7,11 +7,11 @@ import ru.otus.hw.models.SystemUser;
 
 public interface AclServiceWrapperService {
 
-    void addPermission(SystemUser user, Object object, boolean sidIsOwner, Permission... permission);
+    void addPermission(SystemUser user, Object object, Permission... permission);
 
     void addPermission(Role role, Object object, Permission... permission);
 
-    void addPermission(Sid sid, Object object, boolean sidIsOwner, Permission ... permissions);
+    void addPermission(Sid sid, Object object, Permission ... permissions);
 
     void deleteAllPermission(Object object);
 

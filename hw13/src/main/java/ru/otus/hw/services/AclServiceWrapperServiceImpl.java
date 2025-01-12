@@ -26,24 +26,20 @@ public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
     }
 
     @Override
-    public void addPermission(SystemUser user, Object object, boolean sidIsOwner, Permission... permission) {
+    public void addPermission(SystemUser user, Object object, Permission... permission) {
         Sid sidUser = new PrincipalSid(user.getUsername().toLowerCase());
-        addPermission(sidUser, object, sidIsOwner, permission);
+        addPermission(sidUser, object, permission);
     }
 
     @Override
     public void addPermission(Role role, Object object, Permission... permission) {
         Sid sidRole = new GrantedAuthoritySid(role.getName().toUpperCase());
-        addPermission(sidRole, object, false, permission);
+        addPermission(sidRole, object, permission);
     }
 
     @Override
-    public void addPermission(Sid sid, Object object, boolean sidIsOwner, Permission ... permissions) {
+    public void addPermission(Sid sid, Object object, Permission ... permissions) {
         MutableAcl acl = getAcl(object);
-        if (sidIsOwner) {
-            acl.setOwner(sid);
-        }
-
         for (Permission permission : permissions) {
             acl.insertAce(acl.getEntries().size(), permission, sid, true);
         }
@@ -72,8 +68,8 @@ public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Sid owner = new PrincipalSid(authentication);
         Sid user_role = new GrantedAuthoritySid("ROLE_USER");
-        addPermission(owner, object, true, BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE);
-        addPermission(user_role, object, false, BasePermission.READ);
+        addPermission(owner, object, BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE);
+        addPermission(user_role, object, BasePermission.READ);
     }
 
 
