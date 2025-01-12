@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.CommentDTO;
@@ -21,8 +22,11 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentMapper mapper;
 
+    private final AclServiceCommentService aclServiceService;
+
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
     public Comment findById(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
@@ -30,12 +34,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
     public CommentDTO readById(long id) {
         return mapper.toCommentDTO(findById(id));
     }
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
     public List<CommentDTO> readByBookId(long bookId) {
         var book = bookService.findById(bookId);
         return repository.findAllByBook(book).stream().map(mapper::toCommentDTO).toList();
@@ -43,15 +49,20 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
     public CommentDTO create(long bookId, CommentDTO view) {
         var entity = mapper.toComment(view);
         entity.setBook(bookService.findById(bookId));
         entity = repository.save(entity);
+        var dto = mapper.toCommentDTO(entity);
+        aclServiceService.addPermissionForCreate(dto, entity.getBook());
+
         return mapper.toCommentDTO(entity);
     }
 
     @Override
     @Transactional
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.CommentDTO', 'WRITE')")
     public CommentDTO update(long id, CommentDTO view) {
         var entity = findById(id);
         mapper.updateCommentFromDto(entity, view);
@@ -61,7 +72,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.CommentDTO', 'DELETE')")
     public void deleteById(long id) {
+        var entity = findById(id);
         repository.deleteById(id);
+
+        var dto = mapper.toCommentDTO(entity);
+        aclServiceService.deleteAllPermission(dto);
     }
 }

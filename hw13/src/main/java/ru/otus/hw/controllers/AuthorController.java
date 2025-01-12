@@ -11,13 +11,12 @@ import ru.otus.hw.services.AuthorService;
 
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthorController {
 
-    AuthorService service;
+    private final AuthorService service;
 
     @GetMapping("/author")
-    public List<AuthorDTO> read(){
+    public List<AuthorDTO> read() {
         return service.findAll();
     }
 

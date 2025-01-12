@@ -36,7 +36,7 @@ public class BookController {
         return service.create(book);
     }
 
-    @PostMapping("/book/{id}")
+    @PutMapping("/book/{id}")
     public BookDTO update(
             @PathVariable Long id,
             @RequestBody @Valid BookDTO book

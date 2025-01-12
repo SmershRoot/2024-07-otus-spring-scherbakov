@@ -8,7 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
-import org.springframework.security.acls.domain.*;
+import org.springframework.security.acls.domain.AclAuthorizationStrategy;
+import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
+import org.springframework.security.acls.domain.ConsoleAuditLogger;
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
@@ -42,32 +46,6 @@ public class AclConfig {
                 permissionGrantingStrategy(),
                 aclAuthorizationStrategy());
     }
-
-/*EhCacheBasedAclCache is deprecated
-Переработал:
-https://stackoverflow.com/questions/56157479/spring-security-acl-with-ehcache-3
-*/
-//    @Bean
-//    public EhCacheBasedAclCache aclCache() {
-//        return new EhCacheBasedAclCache(
-//                Objects.requireNonNull(aclEhCacheFactoryBean().getObject()),
-//                permissionGrantingStrategy(),
-//                aclAuthorizationStrategy()
-//        );
-//    }
-//
-//    @Bean
-//    public EhCacheFactoryBean aclEhCacheFactoryBean() {
-//        EhCacheFactoryBean ehCacheFactoryBean = new EhCacheFactoryBean();
-//        ehCacheFactoryBean.setCacheManager(Objects.requireNonNull(aclCacheManager().getObject()));
-//        ehCacheFactoryBean.setCacheName("aclCache");
-//        return ehCacheFactoryBean;
-//    }
-//
-//    @Bean
-//    public EhCacheManagerFactoryBean aclCacheManager() {
-//        return new EhCacheManagerFactoryBean();
-//    }
 
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
