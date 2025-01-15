@@ -13,3 +13,7 @@ databaseChangeLog:
       path: db/changelog/v0.0.2/
   - include:
       file: db/changelog/test-data/v0.0.2/2024-10-03--add-data-book-comments.sql
+  - include:
+      file: db/changelog/test-data/v0.0.4/2025-01-09-acl.sql
+  - include:
+      file: db/changelog/test-data/v0.0.4/2025-01-09-acl-data.sql
