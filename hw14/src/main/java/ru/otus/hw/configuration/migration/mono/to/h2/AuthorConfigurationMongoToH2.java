@@ -1,8 +1,7 @@
-package ru.otus.hw.configuration;
+package ru.otus.hw.configuration.migration.mono.to.h2;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.Chunk;
@@ -13,46 +12,37 @@ import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
+import ru.otus.hw.mapper.AuthorMapper;
+import ru.otus.hw.models.h2.AuthorJpa;
 import ru.otus.hw.models.mongo.AuthorMongo;
-
-import org.springframework.batch.core.Job;
 import ru.otus.hw.processors.AuthorProcessor;
+import ru.otus.hw.repositories.h2.AuthorJpaRepository;
 import ru.otus.hw.repositories.mongo.AuthorMongoRepository;
 
 import java.util.HashMap;
 
 @Configuration
-public class BatchConfigurationMongoToH2 {
+@RequiredArgsConstructor
+public class AuthorConfigurationMongoToH2 {
 
     private final JobRepository jobRepository;
 
     private final PlatformTransactionManager platformTransactionManager;
 
-    private final AuthorMongoRepository mongoAuthorRepository;
+    private final AuthorMongoRepository mongoRepository;
 
-    public BatchConfigurationMongoToH2(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, AuthorMongoRepository mongoAuthorRepository) {
-        this.jobRepository = jobRepository;
-        this.platformTransactionManager = platformTransactionManager;
-        this.mongoAuthorRepository = mongoAuthorRepository;
-    }
-
-    @Bean
-    public Job migrateJobMongoToH2(Step migrateAuthorStepMongoToH2) {
-        return new JobBuilder("migrateJobMongoToH2", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .start(migrateAuthorStepMongoToH2)
-                .build();
-    }
+    private final AuthorJpaRepository jpaRepository;
 
     @Bean
     public Step migrateAuthorStepMongoToH2(
             RepositoryItemReader<AuthorMongo> authorReaderMongoToH2,
-            ItemWriter<AuthorMongo> authorWriterMongoToH2,
-            ItemProcessor<AuthorMongo, AuthorMongo> authorProcessorMongoToH2
+            ItemWriter<AuthorJpa> authorWriterMongoToH2,
+            ItemProcessor<AuthorMongo, AuthorJpa> authorProcessorMongoToH2
     ) {
         return new StepBuilder("migrateAuthorStepMongoToH2", jobRepository)
-                .<AuthorMongo, AuthorMongo>chunk(3, platformTransactionManager)
+                .<AuthorMongo, AuthorJpa>chunk(3, platformTransactionManager)
                 .reader(authorReaderMongoToH2)
                 .processor(authorProcessorMongoToH2)
                 .writer(authorWriterMongoToH2)
@@ -64,23 +54,26 @@ public class BatchConfigurationMongoToH2 {
     public RepositoryItemReader<AuthorMongo> authorReaderMongoToH2() {
         return new RepositoryItemReaderBuilder<AuthorMongo>()
                 .name("authorReaderMongoToH2")
-                .repository(mongoAuthorRepository)
+                .repository(mongoRepository)
                 .methodName("findAll")
                 .sorts(new HashMap<>())
                 .build();
     }
 
     @Bean
-    public AuthorProcessor authorProcessorMongoToH2() {
-        return new AuthorProcessor();
+    public AuthorProcessor authorProcessorMongoToH2(AuthorMapper authorMapper) {
+        return new AuthorProcessor(authorMapper);
     }
 
     @Bean
-    public ItemWriter<AuthorMongo> authorWriterMongoToH2() {
-        return new ItemWriter<AuthorMongo>() {
+    public ItemWriter<AuthorJpa> authorWriterMongoToH2() {
+        return new ItemWriter<AuthorJpa>() {
             @Override
-            public void write(Chunk<? extends AuthorMongo> chunk) throws Exception {
-                System.out.println("authorWriterMongoToH2: " + chunk.size());
+            public void write(@NonNull Chunk<? extends AuthorJpa> chunk) throws Exception {
+                chunk.getItems().forEach(author -> {
+                    //ТУТ Изменение мапы с идентификаторами
+                    jpaRepository.save(author);
+                });
             }
         };
     }
