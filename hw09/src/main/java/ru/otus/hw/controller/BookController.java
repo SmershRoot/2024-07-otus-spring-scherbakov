@@ -22,14 +22,13 @@ import java.util.HashSet;
 
 @Controller
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookController {
 
-    BookService bookService;
+    private final BookService bookService;
 
-    AuthorService authorService;
+    private final AuthorService authorService;
 
-    GenreService genreService;
+    private final GenreService genreService;
 
     @GetMapping("/books")
     public String readAll(Model model) {
@@ -39,7 +38,7 @@ public class BookController {
     }
 
     @GetMapping("/books/{id}")
-    public String read(@PathVariable Long id, Model model) {
+    public String showFormWithDataBook(@PathVariable Long id, Model model) {
         if (id == 0) {
             model.addAttribute("book", new BookBasicDTO());
         } else {
@@ -64,30 +63,16 @@ public class BookController {
             return "book";
         }
 
-        if (id == 0) {
-            bookService.insert(book.getTitle(), book.getAuthorId(),
-                    new HashSet<>(book.getGenreIds()));
-        } else {
-            bookService.update(book.getId(), book.getTitle(), book.getAuthorId(),
-                    new HashSet<>(book.getGenreIds()));
-        }
+        bookService.save(id, book.getTitle(), book.getAuthorId(),
+                new HashSet<>(book.getGenreIds()));
         return "redirect:/books";
     }
 
     @PostMapping("/books/delete")
     public String delete(
-            @RequestParam Long id,
-            @RequestParam(name = "_method", required = false) String method,
-            @ModelAttribute BookDTO book) {
-        if (method.equalsIgnoreCase("DELETE")) {
-            delete(book.getId());
-        }
+            @RequestParam Long id) {
+        bookService.deleteById(id);
         return "redirect:/books";
     }
-
-    public void delete(@PathVariable Long id) {
-        bookService.deleteById(id);
-    }
-
 
 }

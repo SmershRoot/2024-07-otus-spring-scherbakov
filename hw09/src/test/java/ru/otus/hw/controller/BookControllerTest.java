@@ -38,7 +38,7 @@ class BookControllerTest {
     private AuthorService authorService;
 
     @MockBean
-    GenreService genreService;
+    private GenreService genreService;
 
     @Test
     public void testHomePage() throws Exception {
@@ -110,7 +110,7 @@ class BookControllerTest {
                 .flashAttr("book", newBook))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
-        verify(bookService).insert(
+        verify(bookService).save(0,
                 eq(book.getTitle()),
                 eq(book.getAuthor().getId()),
                 eq(book.getGenres().stream().map(GenreDTO::getId).collect(Collectors.toSet()))
@@ -128,7 +128,7 @@ class BookControllerTest {
                         .flashAttr("book", newBook))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/books"));
-        verify(bookService).update(
+        verify(bookService).save(
                 eq(book.getId()),
                 eq(book.getTitle()),
                 eq(book.getAuthor().getId()),

@@ -12,6 +12,7 @@ import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.GenreRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,23 +51,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public BookDTO insert(String title, long authorId, Set<Long> genresIds) {
-        return  save(0, title, authorId, genresIds);
-    }
-
-    @Override
-    @Transactional
-    public BookDTO update(long id, String title, long authorId, Set<Long> genresIds) {
-        return save(id, title, authorId, genresIds);
-    }
-
-    @Override
-    @Transactional
     public void deleteById(long id) {
         bookRepository.deleteById(id);
     }
 
-    private BookDTO save(long id, String title, long authorId, Set<Long> genresIds) {
+    public BookDTO save(long id, String title, long authorId, Set<Long> genresIds) {
         if (isEmpty(genresIds)) {
             throw new IllegalArgumentException("Genres ids must not be null");
         }
