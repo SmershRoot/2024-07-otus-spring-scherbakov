@@ -42,7 +42,6 @@ public class CommentController {
 
     @PutMapping("/book/{bookId}/comment/{id}")
     public CommentDTO update(
-            @PathVariable Long bookId,
             @PathVariable Long id,
             CommentDTO commentDTO
     ) {
@@ -51,7 +50,6 @@ public class CommentController {
 
     @DeleteMapping("/book/{bookId}/comment/{id}")
     public void delete(
-            @PathVariable Long bookId,
             @PathVariable Long id
     ) {
         service.deleteById(id);
