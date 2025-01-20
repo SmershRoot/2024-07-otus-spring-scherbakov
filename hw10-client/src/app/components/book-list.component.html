@@ -1,0 +1,28 @@
+<div class="card my-5">
+  <div class="card-body">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Title</th>
+        <th scope="col">Author</th>
+        <th scope="col">Genres</th>
+      </tr>
+      </thead>
+      <tbody>
+      @for (book of books; track book.id) {
+      <tr >
+        <td>{{ book.id }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author.fullName}}</td>
+        <td>@for (genre of book.genres; track genre.id) {
+          <div>{{genre.name}}</div>
+        }
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+</div>
+
