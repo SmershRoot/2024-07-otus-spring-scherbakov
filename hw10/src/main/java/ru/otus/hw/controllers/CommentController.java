@@ -1,9 +1,12 @@
 package ru.otus.hw.controllers;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.services.CommentService;
 
@@ -11,21 +14,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentController {
 
-    CommentService service;
+    private final CommentService service;
 
     @GetMapping("/book/{bookId}/comment")
-    public List<CommentDTO> read(
+    public List<CommentDTO> readByBookId(
             @PathVariable Long bookId
     ) {
         return service.readByBookId(bookId);
     }
 
     @GetMapping("/book/{bookId}/comment/{id}")
-    public CommentDTO read(
-            @PathVariable Long bookId,
+    public CommentDTO readById(
             @PathVariable Long id
     ) {
         return service.readById(id);

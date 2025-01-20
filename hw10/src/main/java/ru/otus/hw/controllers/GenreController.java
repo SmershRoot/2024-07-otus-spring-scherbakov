@@ -15,10 +15,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GenreController {
 
-    GenreService service;
+    private final GenreService service;
 
     @GetMapping("/genre")
-    public List<GenreDTO> read(){
+    public List<GenreDTO> read() {
         return service.readAll();
     }
 
