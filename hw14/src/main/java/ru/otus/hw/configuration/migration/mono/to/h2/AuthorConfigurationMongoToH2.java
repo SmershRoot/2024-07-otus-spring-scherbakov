@@ -20,6 +20,7 @@ import ru.otus.hw.models.mongo.AuthorMongo;
 import ru.otus.hw.processors.AuthorProcessor;
 import ru.otus.hw.repositories.h2.AuthorJpaRepository;
 import ru.otus.hw.repositories.mongo.AuthorMongoRepository;
+import ru.otus.hw.utils.MongoToH2Utils;
 
 import java.util.HashMap;
 
@@ -34,6 +35,8 @@ public class AuthorConfigurationMongoToH2 {
     private final AuthorMongoRepository mongoRepository;
 
     private final AuthorJpaRepository jpaRepository;
+
+    private final MongoToH2Utils utils;
 
     @Bean
     public Step migrateAuthorStepMongoToH2(
@@ -62,7 +65,7 @@ public class AuthorConfigurationMongoToH2 {
 
     @Bean
     public AuthorProcessor authorProcessorMongoToH2(AuthorMapper authorMapper) {
-        return new AuthorProcessor(authorMapper);
+        return new AuthorProcessor(authorMapper, utils);
     }
 
     @Bean
@@ -71,8 +74,11 @@ public class AuthorConfigurationMongoToH2 {
             @Override
             public void write(@NonNull Chunk<? extends AuthorJpa> chunk) throws Exception {
                 chunk.getItems().forEach(author -> {
-                    //ТУТ Изменение мапы с идентификаторами
+                    long tempId = author.getId();
+                    author.setId(0);
                     jpaRepository.save(author);
+
+                    utils.addAuthorMongoIdAndJpaId(tempId, author.getId());
                 });
             }
         };

@@ -14,16 +14,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
-import ru.otus.hw.mapper.AuthorMapper;
 import ru.otus.hw.mapper.GenreMapper;
-import ru.otus.hw.models.h2.AuthorJpa;
 import ru.otus.hw.models.h2.GenreJpa;
-import ru.otus.hw.models.mongo.AuthorMongo;
 import ru.otus.hw.models.mongo.GenreMongo;
-import ru.otus.hw.processors.AuthorProcessor;
 import ru.otus.hw.processors.GenreProcessor;
 import ru.otus.hw.repositories.h2.GenreJpaRepository;
 import ru.otus.hw.repositories.mongo.GenreMongoRepository;
+import ru.otus.hw.utils.MongoToH2Utils;
 
 import java.util.HashMap;
 
@@ -38,6 +35,8 @@ public class GenreConfigurationMongoToH2 {
     private final GenreMongoRepository mongoRepository;
 
     private final GenreJpaRepository jpaRepository;
+
+    private final MongoToH2Utils utils;
 
     @Bean
     public Step migrateGenreStepMongoToH2(
@@ -66,7 +65,7 @@ public class GenreConfigurationMongoToH2 {
 
     @Bean
     public GenreProcessor genreProcessorMongoToH2(GenreMapper genreMapper) {
-        return new GenreProcessor(genreMapper);
+        return new GenreProcessor(genreMapper, utils);
     }
 
     @Bean
@@ -75,8 +74,11 @@ public class GenreConfigurationMongoToH2 {
             @Override
             public void write(@NonNull Chunk<? extends GenreJpa> chunk) throws Exception {
                 chunk.getItems().forEach(genre -> {
-                    //ТУТ Изменение мапы с идентификаторами
+                    long tempId = genre.getId();
+                    genre.setId(0);
                     jpaRepository.save(genre);
+
+                    utils.addGenreMongoIdAndJpaId(tempId, genre.getId());
                 });
             }
         };

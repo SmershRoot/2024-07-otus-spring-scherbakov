@@ -2,13 +2,13 @@ package ru.otus.hw.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.otus.hw.models.h2.AuthorJpa;
-import ru.otus.hw.models.mongo.AuthorMongo;
+import ru.otus.hw.models.h2.CommentJpa;
+import ru.otus.hw.models.mongo.CommentMongo;
 
 @Mapper(componentModel = "spring")
-public interface AuthorMapper {
+public interface CommentMapper {
 
     @Mapping(target = "id", ignore = true)
-    AuthorJpa toJpa(AuthorMongo author);
+    CommentJpa fromMongo(CommentMongo comment);
 
 }

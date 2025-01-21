@@ -9,6 +9,6 @@ import ru.otus.hw.models.mongo.GenreMongo;
 public interface GenreMapper {
 
     @Mapping(target = "id", ignore = true)
-    GenreJpa toGenreJpa(GenreMongo genre);
+    GenreJpa toJpa(GenreMongo genre);
 
 }

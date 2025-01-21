@@ -1,4 +1,5 @@
 package ru.otus.hw.models.h2;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
