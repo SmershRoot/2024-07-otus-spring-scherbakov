@@ -47,9 +47,4 @@ public class CommentJpa {
     @Column(name = "author")
     private String author;
 
-    @PrePersist
-    private void prePersist() {
-        commentDate = LocalDate.now();
-    }
-
 }
