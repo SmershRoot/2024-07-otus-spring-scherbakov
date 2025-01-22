@@ -18,7 +18,8 @@ public class BookProcessor implements ItemProcessor<BookMongo, BookJpa> {
     @Override
     public BookJpa process(@NonNull BookMongo bookMongo) throws Exception {
         var bookJpa = mapper.toJpa(bookMongo);
-        //utils.getAuthorJpaIdMyMongoId()
+        bookJpa.setId(utils.generateBookJpaTempId(bookMongo.getId()));
         return bookJpa;
     }
+
 }

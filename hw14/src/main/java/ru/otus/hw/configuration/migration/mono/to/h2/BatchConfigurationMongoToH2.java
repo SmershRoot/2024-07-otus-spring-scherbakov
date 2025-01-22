@@ -19,6 +19,8 @@ import ru.otus.hw.utils.MongoToH2Utils;
 @Configuration
 public class BatchConfigurationMongoToH2 {
 
+    public static final String IMPORT_JOB_NAME = "migrateJobMongoToH2";
+
     private final JobRepository jobRepository;
 
     private final MongoToH2Utils mongoToH2Utils;
@@ -32,8 +34,9 @@ public class BatchConfigurationMongoToH2 {
     public Job migrateJobMongoToH2(
             Step migrateAuthorStepMongoToH2,
             Step migrateGenreStepMongoToH2,
-            Step migrateBookStepMongoToH2) {
-        return new JobBuilder("migrateJobMongoToH2", jobRepository)
+            Step migrateBookStepMongoToH2,
+            Step migrateCommentStepMongoToH2) {
+        return new JobBuilder(IMPORT_JOB_NAME, jobRepository)
                 .listener(new JobExecutionListener() {
                     @Override
                     public void beforeJob(JobExecution jobExecution) {
@@ -43,6 +46,7 @@ public class BatchConfigurationMongoToH2 {
                 .incrementer(new RunIdIncrementer())
                 .start(startSlitFlow(migrateAuthorStepMongoToH2, migrateGenreStepMongoToH2))
                 .next(migrateBookStepMongoToH2)
+                .next(migrateCommentStepMongoToH2)
                 .build()
                 .build();
     }

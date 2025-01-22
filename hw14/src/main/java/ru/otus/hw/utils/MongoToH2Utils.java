@@ -3,9 +3,10 @@ package ru.otus.hw.utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.otus.hw.repositories.h2.AuthorJpaRepository;
+import ru.otus.hw.repositories.h2.BookJpaRepository;
 import ru.otus.hw.repositories.h2.GenreJpaRepository;
+import ru.otus.hw.repositories.h2.CommentJpaRepository;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,25 +18,37 @@ public class MongoToH2Utils {
 
     private final GenreJpaRepository genreJPARepository;
 
+    private final BookJpaRepository bookJPARepository;
+
+    private final CommentJpaRepository commentJPARepository;
+
     private final AtomicLong index = new AtomicLong(0);
 
     private final ConcurrentHashMap<Long, String> authorTempIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<String, Long> authorMapMonoAndJpaIds = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> authorMapMongoAndJpaIds = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<Long, String> genreTempIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<String, Long> genreMapMonoAndJpaIds = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> genreMapMongoAndJpaIds = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<Long, String> bookTempIds = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<String, Long> bookMapMongoAndJpaIds = new ConcurrentHashMap<>();
 
 
     public void h2ClearAll() {
         authorJPARepository.deleteAll();
         genreJPARepository.deleteAll();
+        bookJPARepository.deleteAll();
+        commentJPARepository.deleteAll();
 
         authorTempIds.clear();
-        authorMapMonoAndJpaIds.clear();
+        authorMapMongoAndJpaIds.clear();
         genreTempIds.clear();
-        genreMapMonoAndJpaIds.clear();
+        genreMapMongoAndJpaIds.clear();
+        bookTempIds.clear();
+        bookMapMongoAndJpaIds.clear();
     }
 
     public synchronized long generateAuthorJpaTempId(String authorId) {
@@ -49,24 +62,12 @@ public class MongoToH2Utils {
 
     public void addAuthorMongoIdAndJpaId(long tempId, long jpaId) {
         var mongoId = getAuthorMongoIdByJpaTempId(tempId);
-        authorMapMonoAndJpaIds.put(mongoId, jpaId);
+        authorMapMongoAndJpaIds.put(mongoId, jpaId);
     }
 
     public long getAuthorJpaIdByMongoId(String authorId) {
-        return authorMapMonoAndJpaIds.get(authorId);
+        return authorMapMongoAndJpaIds.get(authorId);
     }
-
-
-//TODO DELETE
-    public Map<Long, String> getAuthorTempIdsForTest() {
-        return authorTempIds;
-    }
-
-    //TODO DELETE
-    public Map<String, Long> getAuthorMapMongoAndJpaIdsForTest() {
-        return authorMapMonoAndJpaIds;
-    }
-
 
     public synchronized long generateGenreJpaTempId(String genreId) {
         genreTempIds.put(index.incrementAndGet(), genreId);
@@ -79,22 +80,29 @@ public class MongoToH2Utils {
 
     public void addGenreMongoIdAndJpaId(long tempId, long jpaId) {
         var mongoId = getGenreMongoIdByJpaTempId(tempId);
-        genreMapMonoAndJpaIds.put(mongoId, jpaId);
+        genreMapMongoAndJpaIds.put(mongoId, jpaId);
     }
 
     public long getGenreJpaIdByMongoId(String genreId) {
-        return genreMapMonoAndJpaIds.get(genreId);
+        return genreMapMongoAndJpaIds.get(genreId);
     }
 
-
-    //TODO DELETE
-    public Map<Long, String> getGenreMapForTest() {
-        return genreTempIds;
+    public synchronized long generateBookJpaTempId(String bookId) {
+        bookTempIds.put(index.incrementAndGet(), bookId);
+        return index.get();
     }
 
-    //TODO DELETE
-    public Map<String, Long> getGenreMapMongoAndJpaIdsForTest() {
-        return genreMapMonoAndJpaIds;
+    public String getBookMongoIdByJpaTempId(long bookId) {
+        return bookTempIds.get(bookId);
+    }
+
+    public void addBookMongoIdAndJpaId(long tempId, long jpaId) {
+        var mongoId = getBookMongoIdByJpaTempId(tempId);
+        bookMapMongoAndJpaIds.put(mongoId, jpaId);
+    }
+
+    public long getBookJpaIdByMongoId(String bookId) {
+        return bookMapMongoAndJpaIds.get(bookId);
     }
 
 }

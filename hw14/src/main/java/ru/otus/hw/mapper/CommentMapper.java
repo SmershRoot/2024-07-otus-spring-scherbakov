@@ -9,6 +9,7 @@ import ru.otus.hw.models.mongo.CommentMongo;
 public interface CommentMapper {
 
     @Mapping(target = "id", ignore = true)
-    CommentJpa fromMongo(CommentMongo comment);
+    @Mapping(target = "book.id", ignore = true)
+    CommentJpa toJpa(CommentMongo comment);
 
 }

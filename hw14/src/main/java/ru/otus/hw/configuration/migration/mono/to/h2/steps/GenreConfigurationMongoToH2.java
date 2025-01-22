@@ -1,4 +1,4 @@
-package ru.otus.hw.configuration.migration.mono.to.h2;
+package ru.otus.hw.configuration.migration.mono.to.h2.steps;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
