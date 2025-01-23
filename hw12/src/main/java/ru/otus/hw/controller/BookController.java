@@ -1,9 +1,7 @@
 package ru.otus.hw.controller;
 
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,14 +27,13 @@ import java.util.HashSet;
 
 @Controller
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookController {
 
-    BookService bookService;
+   private final BookService bookService;
 
-    AuthorService authorService;
+    private final AuthorService authorService;
 
-    GenreService genreService;
+    private final GenreService genreService;
 
     @GetMapping("/books")
     public String readAll(Model model) {
