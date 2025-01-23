@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import ru.otus.hw.handler.BookHandler;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -22,8 +23,12 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class FunctionalEndpointsBookConfig {
 
     @Bean
-    RouterFunction<ServerResponse> getComposedRoutes(BookMapper mapper, BookRepository repository) {
-        var handler = new BookHandler(mapper, repository);
+    RouterFunction<ServerResponse> getComposedRoutes(
+            BookMapper mapper,
+            BookRepository repository,
+            CommentRepository commentRepository
+    ) {
+        var handler = new BookHandler(mapper, repository, commentRepository);
         return route(GET("/library-api/route/book"), handler::read)
                 .and(route(GET("/library-api/route/book/{id}"),
                         handler::readById
@@ -32,20 +37,32 @@ public class FunctionalEndpointsBookConfig {
     }
 
     @Bean
-    RouterFunction<ServerResponse> crateRoute(BookMapper mapper, BookRepository repository) {
-        var handler = new BookHandler(mapper, repository);
+    RouterFunction<ServerResponse> crateRoute(
+            BookMapper mapper,
+            BookRepository repository,
+            CommentRepository commentRepository
+    ) {
+        var handler = new BookHandler(mapper, repository, commentRepository);
         return route(POST("/library-api/route/book"), handler::create);
     }
 
     @Bean
-    RouterFunction<ServerResponse> updateRoute(BookMapper mapper, BookRepository repository) {
-        var handler = new BookHandler(mapper, repository);
+    RouterFunction<ServerResponse> updateRoute(
+            BookMapper mapper,
+            BookRepository repository,
+            CommentRepository commentRepository
+    ) {
+        var handler = new BookHandler(mapper, repository, commentRepository);
         return route(PUT("/library-api/route/book/{id}"), handler::update);
     }
 
     @Bean
-    RouterFunction<ServerResponse> deleteRoute(BookMapper mapper, BookRepository repository) {
-        var handler = new BookHandler(mapper, repository);
+    RouterFunction<ServerResponse> deleteRoute(
+            BookMapper mapper,
+            BookRepository repository,
+            CommentRepository commentRepository
+    ) {
+        var handler = new BookHandler(mapper, repository, commentRepository);
         return route(DELETE("/library-api/route/book/{id}"), handler::delete);
     }
 

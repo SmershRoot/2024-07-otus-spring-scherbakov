@@ -2,6 +2,7 @@ package ru.otus.hw.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +26,8 @@ public class BookController {
     private final BookMapper mapper;
 
     private final BookRepository repository;
+
+    private final CommentRepository commentRepository;
 
     @GetMapping("/book")
     public Flux<BookDTO> read() {
@@ -59,8 +63,9 @@ public class BookController {
     }
 
     @DeleteMapping("/book/{id}")
-    public void delete(@PathVariable String id) {
-        repository.deleteById(id);
+    public Mono<Void> delete(@PathVariable String id) {
+        commentRepository.deleteAllByBookId(id).subscribe();
+        return repository.deleteById(id);
     }
 
 

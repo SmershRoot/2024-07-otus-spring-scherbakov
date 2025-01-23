@@ -14,6 +14,7 @@ import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 
 import java.util.List;
 
@@ -33,12 +34,15 @@ public class FunctionalEndpointsBookRouteTest {
     private BookRepository repository;
 
     @MockBean
+    private CommentRepository commentRepository;
+
+    @MockBean
     private BookMapper mapper;
 
     @Test
     void getComposedRoutes_findAll() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.getComposedRoutes(mapper, repository))
+                .bindToRouterFunction(config.getComposedRoutes(mapper, repository, commentRepository))
                 .build();
 
         List<BookDTO> bookDTOs = getDbBookDTOs();
@@ -60,7 +64,7 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void getComposedRoutes_findById() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.getComposedRoutes(mapper, repository))
+                .bindToRouterFunction(config.getComposedRoutes(mapper, repository, commentRepository))
                 .build();
 
         BookDTO bookDTO = getDbBookDTOs().get(0);
@@ -79,7 +83,8 @@ public class FunctionalEndpointsBookRouteTest {
 
     @Test
     void crateRoute() {
-        WebTestClient client = WebTestClient.bindToRouterFunction(config.crateRoute(mapper, repository))
+        WebTestClient client = WebTestClient
+                .bindToRouterFunction(config.crateRoute(mapper, repository, commentRepository))
                 .build();
         BookDTO bookDTO = getDbBookDTOs().get(0);
         bookDTO.setId(null);
@@ -103,7 +108,8 @@ public class FunctionalEndpointsBookRouteTest {
 
     @Test
     void updateRoute() {
-        WebTestClient client = WebTestClient.bindToRouterFunction(config.updateRoute(mapper, repository))
+        WebTestClient client = WebTestClient
+                .bindToRouterFunction(config.updateRoute(mapper, repository, commentRepository))
                 .build();
         BookDTO bookDTO = getDbBookDTOs().get(0);
         Book book = getDbBooks().get(0);
@@ -126,7 +132,8 @@ public class FunctionalEndpointsBookRouteTest {
 
     @Test
     void deleteRoute(){
-        WebTestClient client = WebTestClient.bindToRouterFunction(config.deleteRoute(mapper, repository))
+        WebTestClient client = WebTestClient
+                .bindToRouterFunction(config.deleteRoute(mapper, repository, commentRepository))
                 .build();
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));

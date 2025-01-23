@@ -10,6 +10,7 @@ import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -19,9 +20,16 @@ public class BookHandler {
 
     private final BookRepository repository;
 
-    public BookHandler(BookMapper mapper, BookRepository repository) {
+    private final CommentRepository commentRepository;
+
+    public BookHandler(
+            BookMapper mapper,
+            BookRepository repository,
+            CommentRepository commentRepository
+    ) {
         this.mapper = mapper;
         this.repository = repository;
+        this.commentRepository = commentRepository;
     }
 
     public Mono<ServerResponse> read(ServerRequest request) {
@@ -56,13 +64,11 @@ public class BookHandler {
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
-        Mono<Book> entity = findById(request.pathVariable("id"));
-        Mono<Void> bookToDelete = entity.flatMap(repository::delete);
+        String id = request.pathVariable("id");
+        commentRepository.deleteAllByBookId(id).subscribe();
+        Mono<Void> bookToDelete = repository.deleteById(id);
         return bookToDelete.then(ok().build());
     }
-
-
-
 
     private Mono<Book> findById(String id) {
         return repository.findById(id)

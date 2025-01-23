@@ -1,6 +1,7 @@
 package ru.otus.hw.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,15 @@ public class CommentController {
     private final BookRepository bookRepository;
 
     private final CommentMapper mapper;
+
+
+    @GetMapping("/book/{bookId}/comments")
+    public Flux<CommentDTO> readAll(
+            @PathVariable String bookId
+    ) {
+        var ff = repository.findAll();
+        return repository.findAll().map(mapper::toCommentDTO);
+    }
 
     @GetMapping("/book/{bookId}/comment")
     public Flux<CommentDTO> readByBookId(
@@ -68,10 +78,10 @@ public class CommentController {
     }
 
     @DeleteMapping("/book/{bookId}/comment/{id}")
-    public void delete(
+    public Mono<Void> delete(
             @PathVariable String id
     ) {
-        repository.deleteById(id);
+        return repository.deleteById(id);
     }
 
     public Mono<Comment> findById(String id) {
