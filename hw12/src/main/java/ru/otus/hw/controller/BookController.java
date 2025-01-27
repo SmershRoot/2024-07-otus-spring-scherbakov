@@ -65,7 +65,6 @@ public class BookController {
     }
 
     @PostMapping("/books/save")
-    @PreAuthorize(Constants.Authority.PREAUTHORIZE_ADMIN)
     public String save(
             @RequestParam Long id,
             @Valid @ModelAttribute("book") BookBasicDTO book,
@@ -89,7 +88,6 @@ public class BookController {
     }
 
     @PostMapping("/books/delete")
-    @PreAuthorize(Constants.Authority.PREAUTHORIZE_ADMIN)
     public String delete(
             @RequestParam Long id,
             @RequestParam(name = "_method", required = false) String method,

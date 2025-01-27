@@ -17,7 +17,6 @@ import ru.otus.hw.configuration.constants.Constants;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Bean
