@@ -44,6 +44,9 @@ public class BookController {
 
     private boolean isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
         return authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -89,11 +92,8 @@ public class BookController {
     @PostMapping("/books/delete")
     public String delete(
             @RequestParam Long id,
-            @RequestParam(name = "_method", required = false) String method,
             @ModelAttribute BookDTO book) {
-        if (method.equalsIgnoreCase("DELETE")) {
-            delete(book.getId());
-        }
+        delete(book.getId());
         return "redirect:/books";
     }
 
