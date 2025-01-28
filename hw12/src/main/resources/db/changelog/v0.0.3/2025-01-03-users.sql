@@ -26,7 +26,7 @@ values (1, 'user', '$2a$04$QN6eLV125r1wb26FnG/ZzejoF1xcg1nZ49aWMI6VZ4IzgoGW7E/yy
  (2, 'admin', '$2a$04$QN6eLV125r1wb26FnG/ZzejoF1xcg1nZ49aWMI6VZ4IzgoGW7E/yy');
 
 insert into roles(id, name)
-values (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
+values (1, 'USER'), (2, 'ADMIN');
 
 insert into users_roles(user_id, role_id)
 values (1, 1), (2, 1), (2, 2);

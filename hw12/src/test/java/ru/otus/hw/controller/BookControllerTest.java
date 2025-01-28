@@ -45,7 +45,7 @@ class BookControllerTest {
     private AuthorService authorService;
 
     @MockBean
-    GenreService genreService;
+    private GenreService genreService;
 
     @Test
     public void testWithoutAuthentication() throws Exception {
