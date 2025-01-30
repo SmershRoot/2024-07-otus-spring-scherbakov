@@ -38,7 +38,7 @@ class CommentServiceImplTest {
     private CommentService service;
 
     @MockBean
-    AclServiceCommentService aclServiceService;
+    private AclServiceCommentService aclServiceService;
 
     @MockBean
     private AclServiceBookService aclService;

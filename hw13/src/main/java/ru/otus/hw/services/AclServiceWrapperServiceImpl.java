@@ -19,6 +19,8 @@ import ru.otus.hw.models.SystemUser;
 @Service
 public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
 
+    private static final String ROLE_USER = "ROLE_USER";
+
     private final MutableAclService mutableAclService;
 
     public AclServiceWrapperServiceImpl(MutableAclService mutableAclService) {
@@ -67,11 +69,9 @@ public class AclServiceWrapperServiceImpl implements AclServiceWrapperService {
     public void addPermissionForCreate(Object object) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Sid owner = new PrincipalSid(authentication);
-        Sid user_role = new GrantedAuthoritySid("ROLE_USER");
+        Sid userRole = new GrantedAuthoritySid(ROLE_USER);
         addPermission(owner, object, BasePermission.READ, BasePermission.WRITE, BasePermission.DELETE);
-        addPermission(user_role, object, BasePermission.READ);
+        addPermission(userRole, object, BasePermission.READ);
     }
-
-
 
 }
