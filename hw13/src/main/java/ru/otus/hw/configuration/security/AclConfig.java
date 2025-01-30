@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 
 
 /**
- * Из-за того что EhCacheBasedAclCache is deprecated переработал без 3-его пункта инструкции
+ * Из-за того что EhCacheBasedAclCache is deprecated переработал
  * <a href="https://stackoverflow.com/questions/56157479/spring-security-acl-with-ehcache-3"/>
  *
  */
