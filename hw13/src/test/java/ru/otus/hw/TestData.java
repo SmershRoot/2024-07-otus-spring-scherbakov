@@ -47,9 +47,9 @@ public class TestData {
     }
 
     public static List<Genre> getDbGenres() {
-        return IntStream.range(1, 7).boxed()
+        return new ArrayList<Genre>(IntStream.range(1, 7).boxed()
                 .map(id -> new Genre(id, "Genre_" + id))
-                .toList();
+                .toList());
     }
 
     public static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
@@ -64,7 +64,6 @@ public class TestData {
 
     public static List<CommentDTO> getDbCommentDTOs() {
         var result = new ArrayList<CommentDTO>();
-        var dbBooks = getDbBookDTOs().stream().collect(Collectors.toMap(BookDTO::getId, book -> book));
 
         result.add(new CommentDTO(1L, "Comment_1_1", LocalDate.parse( "2024-01-01"), "Author_1"));
         result.add(new CommentDTO(2L, "Comment_2", LocalDate.parse( "2024-01-02"), "Author_2"));
