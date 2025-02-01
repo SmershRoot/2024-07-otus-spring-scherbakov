@@ -12,6 +12,8 @@ public interface BookService {
 
     List<BookDTO> readAll();
 
+//    List<BookDTO> mapAll(List<Book> books);
+
     BookDTO create(BookDTO bookDTO);
 
     BookDTO update(long id, BookDTO bookDTO);

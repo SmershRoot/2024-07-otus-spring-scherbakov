@@ -1,7 +1,5 @@
 package ru.otus.hw.repositories;
 
-//import jakarta.annotation.Nonnull;
-//import jakarta.validation.constraints.NotNull;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

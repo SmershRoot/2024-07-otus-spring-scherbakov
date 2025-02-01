@@ -12,7 +12,7 @@ INSERT INTO acl_sid (id, principal, sid) VALUES
 (17, 1, 'user2');
 
 INSERT INTO acl_class (id, class) VALUES
-(101, 'ru.otus.hw.dto.BookDTO'), (102, 'ru.otus.hw.dto.CommentDTO');
+(101, 'ru.otus.hw.models.Book'), (102, 'ru.otus.hw.models.Comment');
 
 INSERT INTO acl_object_identity (id, object_id_class, object_id_identity, parent_object, owner_sid, entries_inheriting) VALUES
 (1001, 101, 1, NULL, 14, 1),

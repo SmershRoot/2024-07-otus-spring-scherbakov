@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Import({
         BookServiceImpl.class,
+        BookWithSecurityService.class,
         BookMapperImpl.class
 })
 @Transactional(propagation = Propagation.NOT_SUPPORTED)

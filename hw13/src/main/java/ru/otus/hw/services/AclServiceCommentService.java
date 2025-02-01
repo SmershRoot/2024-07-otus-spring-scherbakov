@@ -25,8 +25,7 @@ public class AclServiceCommentService extends AclServiceWrapperServiceImpl {
     public void addPermissionForCreate(Object object, Book book) {
         super.addPermissionForCreate(object);
 
-        var dtoBook = mapper.toBookDTO(book);
-        MutableAcl acl = super.getAcl(dtoBook);
+        MutableAcl acl = super.getAcl(book);
         var owner = acl.getOwner();
         super.addPermission(owner, object, BasePermission.READ, BasePermission.DELETE);
     }

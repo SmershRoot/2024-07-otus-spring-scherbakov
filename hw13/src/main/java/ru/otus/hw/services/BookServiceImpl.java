@@ -1,7 +1,6 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,19 +19,21 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository repository;
 
+    private final BookWithSecurityService securityService;
+
     private final BookMapper mapper;
 
     private final AclServiceBookService aclServiceService;
 
     @Override
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.BookDTO', 'READ')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'READ')")
     public BookDTO readById(long id) {
         return mapper.toBookDTO(findById(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.BookDTO', 'READ')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'READ')")
     public Book findById(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
@@ -40,9 +41,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
-    @PostFilter("hasPermission(filterObject, 'READ')")
     public List<BookDTO> readAll() {
-        return repository.findAll().stream().map(mapper::toBookDTO).collect(Collectors.toList());
+        return securityService.readAll().stream()
+                .map(mapper::toBookDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookDTO> mapAll(List<Book> books) {
+        return books.stream().map(mapper::toBookDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -53,13 +59,13 @@ public class BookServiceImpl implements BookService {
         entity = repository.save(entity);
         var dto = mapper.toBookDTO(entity);
 
-        aclServiceService.addPermissionForCreate(dto);
+        aclServiceService.addPermissionForCreate(entity);
         return dto;
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.BookDTO', 'WRITE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'WRITE')")
     public BookDTO update(long id, BookDTO view) {
         var entity = findById(id);
         mapper.updateBookFromDto(entity, view);
@@ -69,12 +75,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.BookDTO', 'DELETE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'DELETE')")
     public void deleteById(long id) {
         var entity = findById(id);
         repository.deleteById(id);
-        var dto = mapper.toBookDTO(entity);
-        aclServiceService.deleteAllPermission(dto);
+        aclServiceService.deleteAllPermission(entity);
     }
 
 }

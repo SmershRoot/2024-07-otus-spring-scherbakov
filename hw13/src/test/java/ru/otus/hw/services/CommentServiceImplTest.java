@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("Сервис на основе Jpa для работы с комментариями")
 @DataJpaTest
 @Import(value = {
-        CommentServiceImpl.class, BookServiceImpl.class,
+        CommentServiceImpl.class, BookServiceImpl.class, BookWithSecurityService.class,
         CommentMapperImpl.class, BookMapperImpl.class
 })
 @Transactional(propagation = Propagation.NOT_SUPPORTED)

@@ -53,13 +53,13 @@ public class TestData {
     }
 
     public static List<Book> getDbBooks(List<Author> dbAuthors, List<Genre> dbGenres) {
-        return IntStream.range(1, 4).boxed()
+        return new ArrayList<Book>(IntStream.range(1, 4).boxed()
                 .map(id -> new Book(id,
                         "BookTitle_" + id,
                         dbAuthors.get(id - 1),
                         dbGenres.subList((id - 1) * 2, (id - 1) * 2 + 2)
                 ))
-                .toList();
+                .toList());
     }
 
     public static List<CommentDTO> getDbCommentDTOs() {

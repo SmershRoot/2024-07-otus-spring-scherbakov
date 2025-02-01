@@ -54,15 +54,14 @@ public class CommentServiceImpl implements CommentService {
         var entity = mapper.toComment(view);
         entity.setBook(bookService.findById(bookId));
         entity = repository.save(entity);
-        var dto = mapper.toCommentDTO(entity);
-        aclServiceService.addPermissionForCreate(dto, entity.getBook());
+        aclServiceService.addPermissionForCreate(entity, entity.getBook());
 
         return mapper.toCommentDTO(entity);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.CommentDTO', 'WRITE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Comment', 'WRITE')")
     public CommentDTO update(long id, CommentDTO view) {
         var entity = findById(id);
         mapper.updateCommentFromDto(entity, view);
@@ -72,12 +71,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.dto.CommentDTO', 'DELETE')")
+    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Comment', 'DELETE')")
     public void deleteById(long id) {
         var entity = findById(id);
         repository.deleteById(id);
 
-        var dto = mapper.toCommentDTO(entity);
-        aclServiceService.deleteAllPermission(dto);
+        aclServiceService.deleteAllPermission(entity);
     }
 }
