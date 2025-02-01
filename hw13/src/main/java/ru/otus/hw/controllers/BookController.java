@@ -23,7 +23,6 @@ public class BookController {
     @GetMapping("/book")
     public List<BookDTO> read() {
         return service.readAll();
-//        return service.mapAll(service.readAll());
     }
 
     @GetMapping("/book/{id}")

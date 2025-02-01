@@ -36,7 +36,7 @@ public class BookWithSecurityService {
         return entity;
     }
 
-    @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'WRITE')")
+    @PreAuthorize("hasPermission(#entity, 'WRITE')")
     protected Book update(Book entity) {
         return repository.save(entity);
     }
