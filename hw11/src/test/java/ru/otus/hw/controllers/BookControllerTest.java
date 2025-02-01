@@ -15,6 +15,7 @@ import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
 import reactor.test.StepVerifier;
+import ru.otus.hw.repositories.CommentRepository;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest(classes = { BookController.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import({BookRepository.class, BookMapper.class})
+@Import({BookRepository.class, CommentRepository.class, BookMapper.class})
 @EnableAutoConfiguration
 public class BookControllerTest {
 
@@ -32,6 +33,9 @@ public class BookControllerTest {
 
     @MockBean
     private BookRepository repository;
+
+    @MockBean
+    private CommentRepository commentRepository;
 
     @MockBean
     private BookMapper mapper;
@@ -140,6 +144,7 @@ public class BookControllerTest {
     void delete(){
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));
+        when(commentRepository.deleteAllByBookId(book.getId())).thenReturn(Mono.empty().then());
         when(repository.delete(book)).thenReturn(Mono.empty().then());
 
         webClient.delete()
