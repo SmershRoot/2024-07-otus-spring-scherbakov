@@ -8,9 +8,14 @@ import reactor.core.publisher.Mono;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
+
+import java.util.Objects;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -20,15 +25,23 @@ public class BookHandler {
 
     private final BookRepository repository;
 
+    private final AuthorRepository authorRepository;
+
+    private final GenreRepository genreRepository;
+
     private final CommentRepository commentRepository;
 
     public BookHandler(
             BookMapper mapper,
             BookRepository repository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
             CommentRepository commentRepository
     ) {
         this.mapper = mapper;
         this.repository = repository;
+        this.authorRepository = authorRepository;
+        this.genreRepository = genreRepository;
         this.commentRepository = commentRepository;
     }
 
@@ -43,10 +56,35 @@ public class BookHandler {
         return ok().contentType(APPLICATION_JSON).body(book, BookDTO.class);
     }
 
-    public Mono<ServerResponse> create(ServerRequest request) {
+    public Mono<ServerResponse> create2(ServerRequest request) {
         Mono<BookDTO> book = request.bodyToMono(BookDTO.class);
         Mono<BookDTO> bookToSave = book.map(mapper::toBook)
                 .flatMap(repository::save).map(mapper::toBookDTO);
+        return ok().contentType(APPLICATION_JSON).body(bookToSave, BookDTO.class);
+    }
+
+    public Mono<ServerResponse> create(ServerRequest request) {
+        Mono<BookDTO> book = request.bodyToMono(BookDTO.class);
+        Mono<BookDTO> bookToSave = book
+                .flatMap(dto -> Flux.fromIterable(dto.getGenres())
+                        .flatMap(g -> genreRepository.findById(g.getId())
+                                .switchIfEmpty(
+                                        Mono.error(
+                                                new EntityNotFoundException("Genre with id not found")))
+                        ).next().then(Mono.just(dto)))
+                .flatMap(dto -> {
+                    var author = dto.getAuthor();
+                    if(Objects.isNull(author)){
+                        return Mono.error(new RuntimeException("Author is null"));
+                    }
+
+                    return authorRepository.findById(author.getId())
+                            .switchIfEmpty(Mono.error(new EntityNotFoundException("Author with id not found")))
+                            .then(Mono.just(dto));
+                })
+                .map(mapper::toBook)
+                .flatMap(repository::save).map(mapper::toBookDTO);
+
         return ok().contentType(APPLICATION_JSON).body(bookToSave, BookDTO.class);
     }
 

@@ -13,8 +13,10 @@ import ru.otus.hw.TestData;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 
@@ -34,6 +36,12 @@ public class FunctionalEndpointsBookRouteTest {
     private BookRepository repository;
 
     @MockBean
+    private AuthorRepository authorRepository;
+
+    @MockBean
+    private GenreRepository genreRepository;
+
+    @MockBean
     private CommentRepository commentRepository;
 
     @MockBean
@@ -42,7 +50,8 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void getComposedRoutes_findAll() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.getComposedRoutes(mapper, repository, commentRepository))
+                .bindToRouterFunction(config.getComposedRoutes(
+                        mapper, repository, authorRepository, genreRepository, commentRepository))
                 .build();
 
         List<BookDTO> bookDTOs = getDbBookDTOs();
@@ -64,7 +73,8 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void getComposedRoutes_findById() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.getComposedRoutes(mapper, repository, commentRepository))
+                .bindToRouterFunction(config.getComposedRoutes(
+                        mapper, repository, authorRepository, genreRepository, commentRepository))
                 .build();
 
         BookDTO bookDTO = getDbBookDTOs().get(0);
@@ -84,13 +94,19 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void crateRoute() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.crateRoute(mapper, repository, commentRepository))
+                .bindToRouterFunction(config.crateRoute(
+                        mapper, repository, authorRepository, genreRepository, commentRepository))
                 .build();
         BookDTO bookDTO = getDbBookDTOs().get(0);
         bookDTO.setId(null);
         Book book = getDbBooks().get(0);
         book.setId(null);
         when(repository.save(book)).thenReturn(Mono.just(book));
+        book.getGenres().forEach(g ->
+              when(genreRepository.findById(g.getId())).thenReturn(Mono.just(g))
+        );
+        when(authorRepository.findById(book.getAuthor().getId())).thenReturn(Mono.just(book.getAuthor()));
+
         when(mapper.toBook(bookDTO)).thenReturn(book);
         when(mapper.toBookDTO(book)).thenReturn(bookDTO);
 
@@ -109,7 +125,8 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void updateRoute() {
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.updateRoute(mapper, repository, commentRepository))
+                .bindToRouterFunction(config.updateRoute(
+                        mapper, repository, authorRepository, genreRepository, commentRepository))
                 .build();
         BookDTO bookDTO = getDbBookDTOs().get(0);
         Book book = getDbBooks().get(0);
@@ -133,11 +150,13 @@ public class FunctionalEndpointsBookRouteTest {
     @Test
     void deleteRoute(){
         WebTestClient client = WebTestClient
-                .bindToRouterFunction(config.deleteRoute(mapper, repository, commentRepository))
+                .bindToRouterFunction(config.deleteRoute(
+                        mapper, repository, authorRepository, genreRepository, commentRepository))
                 .build();
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));
-        when(repository.delete(book)).thenReturn(Mono.empty().then());
+        when(commentRepository.deleteAllByBookId(book.getId())).thenReturn(Mono.empty().then());
+        when(repository.deleteById(book.getId())).thenReturn(Mono.empty().then());
 
         client.delete()
                 .uri("/library-api/route/book/"+book.getId())
@@ -145,7 +164,7 @@ public class FunctionalEndpointsBookRouteTest {
                 .expectStatus()
                 .isOk();
 
-        verify(repository).delete(book);
+        verify(repository).deleteById(book.getId());
     }
 
 

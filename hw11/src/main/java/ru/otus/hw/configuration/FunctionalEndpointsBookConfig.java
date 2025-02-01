@@ -6,8 +6,10 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import ru.otus.hw.handler.BookHandler;
 import ru.otus.hw.mapper.BookMapper;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
@@ -26,9 +28,11 @@ public class FunctionalEndpointsBookConfig {
     RouterFunction<ServerResponse> getComposedRoutes(
             BookMapper mapper,
             BookRepository repository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
             CommentRepository commentRepository
     ) {
-        var handler = new BookHandler(mapper, repository, commentRepository);
+        var handler = new BookHandler(mapper, repository, authorRepository, genreRepository, commentRepository);
         return route(GET("/library-api/route/book"), handler::read)
                 .and(route(GET("/library-api/route/book/{id}"),
                         handler::readById
@@ -40,9 +44,11 @@ public class FunctionalEndpointsBookConfig {
     RouterFunction<ServerResponse> crateRoute(
             BookMapper mapper,
             BookRepository repository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
             CommentRepository commentRepository
     ) {
-        var handler = new BookHandler(mapper, repository, commentRepository);
+        var handler = new BookHandler(mapper, repository, authorRepository, genreRepository, commentRepository);
         return route(POST("/library-api/route/book"), handler::create);
     }
 
@@ -50,9 +56,11 @@ public class FunctionalEndpointsBookConfig {
     RouterFunction<ServerResponse> updateRoute(
             BookMapper mapper,
             BookRepository repository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
             CommentRepository commentRepository
     ) {
-        var handler = new BookHandler(mapper, repository, commentRepository);
+        var handler = new BookHandler(mapper, repository, authorRepository, genreRepository, commentRepository);
         return route(PUT("/library-api/route/book/{id}"), handler::update);
     }
 
@@ -60,9 +68,11 @@ public class FunctionalEndpointsBookConfig {
     RouterFunction<ServerResponse> deleteRoute(
             BookMapper mapper,
             BookRepository repository,
+            AuthorRepository authorRepository,
+            GenreRepository genreRepository,
             CommentRepository commentRepository
     ) {
-        var handler = new BookHandler(mapper, repository, commentRepository);
+        var handler = new BookHandler(mapper, repository, authorRepository, genreRepository, commentRepository);
         return route(DELETE("/library-api/route/book/{id}"), handler::delete);
     }
 
