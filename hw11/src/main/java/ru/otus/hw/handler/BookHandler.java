@@ -56,32 +56,9 @@ public class BookHandler {
         return ok().contentType(APPLICATION_JSON).body(book, BookDTO.class);
     }
 
-    public Mono<ServerResponse> create2(ServerRequest request) {
-        Mono<BookDTO> book = request.bodyToMono(BookDTO.class);
-        Mono<BookDTO> bookToSave = book.map(mapper::toBook)
-                .flatMap(repository::save).map(mapper::toBookDTO);
-        return ok().contentType(APPLICATION_JSON).body(bookToSave, BookDTO.class);
-    }
-
     public Mono<ServerResponse> create(ServerRequest request) {
         Mono<BookDTO> book = request.bodyToMono(BookDTO.class);
-        Mono<BookDTO> bookToSave = book
-                .flatMap(dto -> Flux.fromIterable(dto.getGenres())
-                        .flatMap(g -> genreRepository.findById(g.getId())
-                                .switchIfEmpty(
-                                        Mono.error(
-                                                new EntityNotFoundException("Genre with id not found")))
-                        ).next().then(Mono.just(dto)))
-                .flatMap(dto -> {
-                    var author = dto.getAuthor();
-                    if(Objects.isNull(author)){
-                        return Mono.error(new RuntimeException("Author is null"));
-                    }
-
-                    return authorRepository.findById(author.getId())
-                            .switchIfEmpty(Mono.error(new EntityNotFoundException("Author with id not found")))
-                            .then(Mono.just(dto));
-                })
+        Mono<BookDTO> bookToSave = checkBook(book)
                 .map(mapper::toBook)
                 .flatMap(repository::save).map(mapper::toBookDTO);
 
@@ -91,6 +68,8 @@ public class BookHandler {
     public Mono<ServerResponse> update(ServerRequest request) {
         Mono<Book> entity = findById(request.pathVariable("id"));
         Mono<BookDTO> view = request.bodyToMono(BookDTO.class);
+        view = checkBook(view);
+
         Mono<BookDTO> bookToSave = Mono.zip(entity, view).flatMap(tuple -> {
             Book book = tuple.getT1();
             BookDTO dto = tuple.getT2();
@@ -99,6 +78,28 @@ public class BookHandler {
         }).map(mapper::toBookDTO);
 
         return ok().contentType(APPLICATION_JSON).body(bookToSave, BookDTO.class);
+    }
+
+    public Mono<BookDTO> checkBook(Mono<BookDTO> book) {
+        return book.flatMap(dto -> Flux.fromIterable(dto.getGenres())
+                        .flatMap(g -> genreRepository.findById(g.getId())
+                                .switchIfEmpty(
+                                        Mono.error(
+                                                new EntityNotFoundException("Genre with id not found")))
+                        )
+                        .filter(Objects::nonNull)
+                        .next().then(Mono.just(dto))
+                )
+                .flatMap(dto -> {
+                    var author = dto.getAuthor();
+                    if(Objects.isNull(author)){
+                        return Mono.error(new RuntimeException("Author is null"));
+                    }
+
+                    return authorRepository.findById(author.getId())
+                            .switchIfEmpty(Mono.error(new EntityNotFoundException("Author with id not found")))
+                            .then(Mono.just(dto));
+                });
     }
 
     public Mono<ServerResponse> delete(ServerRequest request) {
