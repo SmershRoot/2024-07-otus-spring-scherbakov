@@ -132,6 +132,11 @@ public class FunctionalEndpointsBookRouteTest {
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));
         when(repository.save(book)).thenReturn(Mono.just(book));
+        book.getGenres().forEach(g ->
+                when(genreRepository.findById(g.getId())).thenReturn(Mono.just(g))
+        );
+        when(authorRepository.findById(book.getAuthor().getId())).thenReturn(Mono.just(book.getAuthor()));
+
         when(mapper.toBook(bookDTO)).thenReturn(book);
         when(mapper.toBookDTO(book)).thenReturn(bookDTO);
 
