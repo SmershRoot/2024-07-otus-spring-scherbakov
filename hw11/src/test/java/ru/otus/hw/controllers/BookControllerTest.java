@@ -1,11 +1,11 @@
 package ru.otus.hw.controllers;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,10 +22,21 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = { BookController.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Import({BookRepository.class, CommentRepository.class, BookMapper.class})
-@EnableAutoConfiguration
+/*
+Для себя оставлю комментарий:
+По описанию на гите mongock существует проблема при инициализации контекста приложения:
+Unsatisfied dependency expressed through method 'connectionDriver' parameter 0:
+No qualifying bean of type 'org.springframework.data.mongodb.core.MongoTemplate' available:
+expected at least 1 bean which qualifies as autowire candidate. Dependency annotations
+
+Разработчик о проблеме знает, но у него своей работы много и он предлагает кому-нибудь
+не равнодушному к продукту, исправить это и выложить PR.
+А пока решение @TestPropertySource(properties = ["mongock.enabled=false"])
+
+https://github.com/mongock/mongock/issues/239
+ */
+@ExtendWith( SpringExtension.class )
+@WebFluxTest(controllers = {BookController.class})
 public class BookControllerTest {
 
     @Autowired
@@ -144,8 +155,8 @@ public class BookControllerTest {
     void delete(){
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));
+        when(repository.deleteById(book.getId())).thenReturn(Mono.empty().then());
         when(commentRepository.deleteAllByBookId(book.getId())).thenReturn(Mono.empty().then());
-        when(repository.delete(book)).thenReturn(Mono.empty().then());
 
         webClient.delete()
                 .uri("/book/"+book.getId())

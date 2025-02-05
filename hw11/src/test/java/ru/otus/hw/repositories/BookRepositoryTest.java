@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import ru.otus.hw.TestData;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий для работы с книгами ")
 @DataMongoTest
+@TestPropertySource(properties = "mongock.enabled=true")
 class BookRepositoryTest {
 
     @Autowired

@@ -19,3 +19,4 @@ mongock:
     write-concern:
       journal: false
     read-concern: local
+  enabled: false # Необходимость описана в BookControllerTest

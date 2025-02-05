@@ -63,8 +63,9 @@ public class BookController {
 
     @DeleteMapping("/book/{id}")
     public Mono<Void> delete(@PathVariable String id) {
-        commentRepository.deleteAllByBookId(id).subscribe();
-        return repository.deleteById(id);
+        return findById(id).doOnNext(book -> {
+            commentRepository.deleteAllByBookId(book.getId()).subscribe();
+        }).flatMap(book -> repository.deleteById(book.getId()));
     }
 
 

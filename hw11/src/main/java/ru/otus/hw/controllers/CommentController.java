@@ -27,11 +27,10 @@ public class CommentController {
     private final CommentMapper mapper;
 
 
-    @GetMapping("/book/{bookId}/comments")
+    @GetMapping("/book/comments")
     public Flux<CommentDTO> readAll(
             @PathVariable String bookId
     ) {
-        var ff = repository.findAll();
         return repository.findAll().map(mapper::toCommentDTO);
     }
 
@@ -39,7 +38,6 @@ public class CommentController {
     public Flux<CommentDTO> readByBookId(
             @PathVariable String bookId
     ) {
-        bookRepository.findById(bookId);
         return repository.findAllByBookId(bookId).map(mapper::toCommentDTO);
     }
 

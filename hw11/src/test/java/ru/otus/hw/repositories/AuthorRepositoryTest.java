@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.test.StepVerifier;
 import ru.otus.hw.models.Author;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Репозиторий для работы с авторами")
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
+@TestPropertySource(properties = "mongock.enabled=true")
 class AuthorRepositoryTest {
 
     @Autowired
