@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DataJpaTest
 @Import(value = {
         CommentServiceImpl.class, BookServiceImpl.class, BookWithSecurityService.class,
-        CommentMapperImpl.class, BookMapperImpl.class
+        CommentMapperImpl.class, BookMapperImpl.class, CommentWithSecurityService.class
 })
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class CommentServiceImplTest {
@@ -95,7 +95,6 @@ class CommentServiceImplTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void update() {
-        var dbBook = TestData.getDbBookDTOs().stream().filter(book -> book.getId() == 1).findFirst().get();
         var expectedComment = new CommentDTO(1L, "NEW COMMENT", LocalDate.parse("2024-01-01"), "Author_1");
 
         assertThat(service.findById(1))
