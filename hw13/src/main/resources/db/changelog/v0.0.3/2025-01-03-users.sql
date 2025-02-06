@@ -30,7 +30,7 @@ values (1, 'user1', '$2a$04$QN6eLV125r1wb26FnG/ZzejoF1xcg1nZ49aWMI6VZ4IzgoGW7E/y
  ;
 
 insert into roles(id, name)
-values (1, 'ROLE_USER'), (2, 'ROLE_ADMIN'), (3, 'ROLE_EDITOR');
+values (1, 'USER'), (2, 'ADMIN'), (3, 'EDITOR');
 
 insert into users_roles(user_id, role_id)
 values (1, 1), (2, 1), (2, 2), (3, 3), (4, 3), (5, 1);
