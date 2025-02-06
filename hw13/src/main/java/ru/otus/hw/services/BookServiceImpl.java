@@ -18,8 +18,6 @@ public class BookServiceImpl implements BookService {
 
     private final BookMapper mapper;
 
-    private final AclServiceBookService aclServiceService;
-
     @Override
     @Transactional(readOnly = true)
     public BookDTO readById(long id) {
@@ -44,10 +42,7 @@ public class BookServiceImpl implements BookService {
     public BookDTO create(BookDTO view) {
         var entity = mapper.toBook(view);
         entity = securityService.create(entity);
-        var dto = mapper.toBookDTO(entity);
-
-        aclServiceService.addPermissionForCreate(entity);
-        return dto;
+        return mapper.toBookDTO(entity);
     }
 
     @Override
@@ -62,9 +57,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteById(long id) {
-        var entity = findById(id);
         securityService.deleteById(id);
-        aclServiceService.deleteAllPermission(entity);
     }
 
 }
