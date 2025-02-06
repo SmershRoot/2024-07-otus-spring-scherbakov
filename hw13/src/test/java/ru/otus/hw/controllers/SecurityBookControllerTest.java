@@ -178,6 +178,8 @@ public class SecurityBookControllerTest {
         var books = getDbBooks();
         var book = books.get(0);
 
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
+
         mockMvc.perform(put("/book/" + book.getId())
                         .contentType(APPLICATION_JSON_VALUE)
                         .content(mapper.writeValueAsString(book)))
@@ -203,8 +205,10 @@ public class SecurityBookControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     void deleteUser() throws Exception {
-        var books = getDbBookDTOs();
+        var books = getDbBooks();
         var book = books.get(0);
+
+        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
 
         mockMvc.perform(delete("/book/" + book.getId()))
                 .andExpect(status().isForbidden());
