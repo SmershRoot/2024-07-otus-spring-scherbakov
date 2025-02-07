@@ -2,6 +2,9 @@ package ru.otus.hw.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,9 +12,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.TestData;
 import ru.otus.hw.dto.BookDTO;
-import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
 
@@ -20,12 +25,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,109 +40,92 @@ public class SecurityBookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private BookMapper mapperBook;
-
+    
     @MockBean
     private BookRepository bookRepository;
 
     @Autowired
     private ObjectMapper mapper;
 
-    @Test
-    public void readAllWithoutAuthentication() throws Exception {
-        mockMvc.perform(get("/book"))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrlPattern("**/login"));
-    }
-
-
-    @Test
-    @WithMockUser(roles = "USER")
-    void readAllUser() throws Exception {
+    @ParameterizedTest(name = "{0}. {1} {2} for user {3} with roles {4} should return {5} status and redirect = {6} or {7}")
+    @MethodSource("getTestData")
+    public void shouldReturnExpectedStatus(
+            int number,
+            String method,
+            String uri,
+            String username,
+            String[] roles,
+            ResultMatcher status,
+            String redirectedUrl,
+            String redirectedUrlPattern,
+            BookDTO content,
+            Object returnedObject) throws Exception {
         var books = getDbBooks();
-        var bookDTOs = getDbBookDTOs();
-
         when(bookRepository.findAll()).thenReturn(books);
+        when(bookRepository.findById(1L)).thenReturn(Optional.of(books.get(0)));
+        when(bookRepository.save(books.get(0))).thenReturn(books.get(0));
 
-        mockMvc.perform(get("/book"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(bookDTOs)));
+        var request = method2RequestBuilder(method, uri);
+
+        if (Objects.nonNull(username)) {
+            var user = user(username);
+            if (Objects.nonNull(roles)) {
+                request = request.with(user.roles(roles));
+            } else {
+                request = request.with(user);
+            }
+        }
+
+        if (Objects.nonNull(content)) {
+            request.contentType(APPLICATION_JSON_VALUE).content(mapper.writeValueAsString(content));
+        }
+
+        var resultActions = mockMvc.perform(request).andExpect(status);
+
+        if (Objects.nonNull(redirectedUrl)) {
+            resultActions.andExpect(redirectedUrl(redirectedUrl));
+        }
+        if (Objects.nonNull(redirectedUrlPattern)) {
+            resultActions.andExpect(redirectedUrlPattern(redirectedUrlPattern));
+        }
+
+        if(Objects.nonNull(returnedObject)){
+            resultActions.andExpect(content().json(mapper.writeValueAsString(returnedObject)));
+        }
+
     }
 
-    @Test
-    @WithMockUser(username = "editor1", roles = "EDITOR")
-    void readAllEditor() throws Exception {
-        var books = getDbBooks();
-        var bookDTOs = getDbBookDTOs().subList(0,1);
-
-        when(bookRepository.findAll()).thenReturn(books);
-
-        mockMvc.perform(get("/book"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(bookDTOs)));
+    private MockHttpServletRequestBuilder method2RequestBuilder(String method, String url) {
+        Map<String, Function<String, MockHttpServletRequestBuilder>> methodMap =
+                Map.of("get", MockMvcRequestBuilders::get,
+                        "post", MockMvcRequestBuilders::post,
+                        "put", MockMvcRequestBuilders::put,
+                        "delete", MockMvcRequestBuilders::delete);
+        return methodMap.get(method).apply(url);
     }
 
-    @Test
-    @WithMockUser(roles = "USER")
-    void readByIdUser() throws Exception {
-        var book = getDbBooks().get(0);
-        var bookDTO = getDbBookDTOs().get(0);
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(get("/book/"+book.getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(bookDTO)));
-    }
-
-    @Test
-    @WithMockUser(username = "editor1", roles = "EDITOR")
-    void readByIdEditorWithRight() throws Exception {
-        var book = getDbBooks().get(0);
-        var bookDTO = getDbBookDTOs().get(0);
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(get("/book/"+book.getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(bookDTO)));
-    }
-
-    @Test
-    @WithMockUser(username = "editor2", roles = "EDITOR")
-    void readByIdEditorWithoutRight() throws Exception {
-        var book = getDbBooks().get(0);
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(get("/book/"+book.getId()))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    void createUser() throws Exception {
+    public static Stream<Arguments> getTestData() {
         var books = getDbBookDTOs();
-        var book = books.get(0);
-        book.setId(null);
 
-        mockMvc.perform(post("/book")
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(book)))
-                .andExpect(status().isForbidden());
-    }
+        return Stream.of(
+                            /*number, method, url, username, roles, status, redirectedUrl, redirectedUrlPattern, content, returnedObject*/
+                Arguments.of(1, "get", "/book", null, null, status().isFound(), null, "**/login", null, null),
+                Arguments.of(2, "get", "/book", "allUser", new String[]{"USER"}, status().isOk(), null, null, null, null),
+                Arguments.of(3, "get", "/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null, books.subList(0,1)),
 
-    @Test
-    @WithMockUser(username = "editor1", roles = "EDITOR")
-    void createEditor() throws Exception {
-        var books = getDbBooks();
-        var bookDTO = getDbBookDTOs().get(0);
-        bookDTO.setId(null);
-        when(bookRepository.save(mapperBook.toBook(bookDTO))).thenReturn(books.get(0));
+                Arguments.of(4, "get","/book/1", "allUser", new String[]{"USER"}, status().isOk(), null, null, null, null),
+                Arguments.of(5, "get","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null, null),
+                Arguments.of(6, "get","/book/1", "editor2", new String[]{"EDITOR"}, status().isForbidden(), null, null, null, null),
 
-        mockMvc.perform(post("/book")
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(bookDTO)))
-                .andExpect(status().isOk());
+                Arguments.of(7, "post","/book", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0), null),
+                Arguments.of(8, "post","/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0), null),
+
+                Arguments.of(9, "put","/book/1", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0), null),
+                Arguments.of(10, "put","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0), null),
+
+                Arguments.of(11, "delete","/book/1", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, null, null),
+                Arguments.of(12, "delete","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null, null)
+        );
     }
 
     @Test
@@ -143,10 +133,10 @@ public class SecurityBookControllerTest {
     void createEditorAndAccessCheck() throws Exception {
         var books = getDbBooks();
         var book = books.get(0);
+        book.setId(0);
         var bookDTO = getDbBookDTOs().get(0);
         bookDTO.setId(null);
 
-        when(bookRepository.save(mapperBook.toBook(bookDTO))).thenReturn(books.get(0));
         when(bookRepository.save(book)).thenReturn(book);
         when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
 
@@ -172,59 +162,7 @@ public class SecurityBookControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @Test
-    @WithMockUser(roles = "USER")
-    void updateUser() throws Exception {
-        var books = getDbBooks();
-        var book = books.get(0);
 
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(put("/book/" + book.getId())
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(book)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = "editor1", roles = "EDITOR")
-    void updateEditor() throws Exception {
-        var books = getDbBooks();
-        var book = books.get(0);
-        var bookDTO = getDbBookDTOs().get(0);
-
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-        when(bookRepository.save(mapperBook.toBook(bookDTO))).thenReturn(book);
-
-        mockMvc.perform(put("/book/" + book.getId())
-                        .contentType(APPLICATION_JSON_VALUE)
-                        .content(mapper.writeValueAsString(bookDTO)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(roles = "USER")
-    void deleteUser() throws Exception {
-        var books = getDbBooks();
-        var book = books.get(0);
-
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(delete("/book/" + book.getId()))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username = "editor1", roles = "EDITOR")
-    void deleteEditor() throws Exception {
-        var books = getDbBooks();
-        var book = books.get(0);
-
-        when(bookRepository.findById(book.getId())).thenReturn(Optional.of(book));
-
-        mockMvc.perform(delete("/book/" + book.getId()))
-                .andExpect(status().isOk());
-    }
 
     private static List<Book> getDbBooks() {
         return TestData.getDbBooks();
