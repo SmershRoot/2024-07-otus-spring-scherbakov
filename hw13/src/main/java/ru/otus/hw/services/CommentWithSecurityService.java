@@ -1,6 +1,7 @@
 package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.otus.hw.exceptions.EntityNotFoundException;
@@ -18,21 +19,21 @@ public class CommentWithSecurityService {
 
     private final AclServiceCommentService aclServiceService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
+    @PostAuthorize("hasPermission(#entity.book.id, 'ru.otus.hw.models.Book', 'READ')")
     public Comment findById(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
+    @PreAuthorize("hasPermission(#book.id, 'ru.otus.hw.models.Book', 'READ')")
     public List<Comment> readByBook(Book book) {
         return repository.findAllByBook(book);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR', 'ROLE_USER')")
+    @PreAuthorize("hasPermission(#entity.book.id, 'ru.otus.hw.models.Book', 'READ')")
     public Comment create(Comment entity) {
         entity = repository.save(entity);
-        aclServiceService.addPermissionForCreate(entity);
+        aclServiceService.addPermissionForCreate(entity, entity.getBook());
         return entity;
     }
 
