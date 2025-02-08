@@ -1,4 +1,4 @@
-package ru.otus.hw.controllers;
+package ru.otus.hw.controllers.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
