@@ -2,7 +2,6 @@ package ru.otus.hw.controllers.security;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.controllers.BookController;
 import ru.otus.hw.services.BookServiceImpl;
-import ru.otus.hw.services.BookWithSecurityServiceMockUtilTest;
+import ru.otus.hw.services.TestBookWithSecurityServiceMockUtil;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = SecurityAutoConfiguration.class)
 @Import(BookServiceImpl.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class BookControllerTest extends BookWithSecurityServiceMockUtilTest {
+public class BookControllerTestBookWithSecurityServiceMockUtil extends TestBookWithSecurityServiceMockUtil {
 
     @Autowired
     private MockMvc mockMvc;

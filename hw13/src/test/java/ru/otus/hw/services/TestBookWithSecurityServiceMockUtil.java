@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-public class BookWithSecurityServiceMockUtilTest {
+public class TestBookWithSecurityServiceMockUtil {
 
     @MockBean
     private BookMapper bookMapper;
