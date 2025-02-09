@@ -19,7 +19,7 @@ public class CommentWithSecurityService {
 
     private final AclServiceCommentService aclServiceService;
 
-    @PostAuthorize("hasPermission(#entity.book.id, 'ru.otus.hw.models.Book', 'READ')")
+    @PostAuthorize("hasPermission(returnObject.book.id, 'ru.otus.hw.models.Book', 'READ')")
     public Comment findById(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
