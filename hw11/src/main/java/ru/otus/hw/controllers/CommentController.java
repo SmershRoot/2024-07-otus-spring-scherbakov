@@ -29,7 +29,6 @@ public class CommentController {
 
     @GetMapping("/book/comments")
     public Flux<CommentDTO> readAll(
-            @PathVariable String bookId
     ) {
         return repository.findAll().map(mapper::toCommentDTO);
     }

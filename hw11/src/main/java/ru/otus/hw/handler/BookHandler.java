@@ -103,8 +103,7 @@ public class BookHandler {
 
     public Mono<ServerResponse> delete(ServerRequest request) {
         String id = request.pathVariable("id");
-        commentRepository.deleteAllByBookId(id).subscribe();
-        Mono<Void> bookToDelete = repository.deleteById(id);
+        Mono<Void> bookToDelete = repository.deleteById(id).then(commentRepository.deleteAllByBookId(id));
         return bookToDelete.then(ok().build());
     }
 
