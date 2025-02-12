@@ -19,29 +19,29 @@ public class BookWithSecurityService {
     private final AclServiceBookService aclServiceService;
 
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'READ')")
-    protected Book findById(long id) {
+    public Book findById(long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
     }
 
     @PostFilter("hasPermission(filterObject, 'READ')")
-    protected List<Book> readAll() {
+    public List<Book> readAll() {
         return repository.findAll();
     }
 
-    protected Book create(Book entity) {
+    public Book create(Book entity) {
         entity = repository.save(entity);
         aclServiceService.addPermissionForCreate(entity);
         return entity;
     }
 
     @PreAuthorize("hasPermission(#entity, 'WRITE')")
-    protected Book update(Book entity) {
+    public Book update(Book entity) {
         return repository.save(entity);
     }
 
     @PreAuthorize("hasPermission(#id, 'ru.otus.hw.models.Book', 'DELETE')")
-    protected void deleteById(long id) {
+    public void deleteById(long id) {
         var entity = findById(id);
         repository.deleteById(id);
         aclServiceService.deleteAllPermission(entity);
