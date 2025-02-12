@@ -29,6 +29,7 @@ public class BookWithSecurityService {
         return repository.findAll();
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_EDITOR')")
     public Book create(Book entity) {
         entity = repository.save(entity);
         aclServiceService.addPermissionForCreate(entity);
