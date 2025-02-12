@@ -13,14 +13,17 @@ import ru.otus.hw.TestData;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import reactor.test.StepVerifier;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /*
 Для себя оставлю комментарий:
@@ -44,6 +47,12 @@ public class BookControllerTest {
 
     @MockBean
     private BookRepository repository;
+
+    @MockBean
+    private AuthorRepository authorRepository;
+
+    @MockBean
+    private GenreRepository genreRepository;
 
     @MockBean
     private CommentRepository commentRepository;
@@ -105,12 +114,16 @@ public class BookControllerTest {
     }
 
     @Test
-    void crate() {
+    void create() {
         BookDTO bookDTO = getDbBookDTOs().get(0);
         bookDTO.setId(null);
         Book book = getDbBooks().get(0);
         book.setId(null);
         when(repository.save(book)).thenReturn(Mono.just(book));
+        book.getGenres().forEach(g ->
+                when(genreRepository.findById(g.getId())).thenReturn(Mono.just(g))
+        );
+        when(authorRepository.findById(book.getAuthor().getId())).thenReturn(Mono.just(book.getAuthor()));
         when(mapper.toBook(bookDTO)).thenReturn(book);
         when(mapper.toBookDTO(book)).thenReturn(bookDTO);
 
@@ -136,6 +149,10 @@ public class BookControllerTest {
         Book book = getDbBooks().get(0);
         when(repository.findById(book.getId())).thenReturn(Mono.just(book));
         when(repository.save(book)).thenReturn(Mono.just(book));
+        book.getGenres().forEach(g ->
+                when(genreRepository.findById(g.getId())).thenReturn(Mono.just(g))
+        );
+        when(authorRepository.findById(book.getAuthor().getId())).thenReturn(Mono.just(book.getAuthor()));
         when(mapper.toBook(bookDTO)).thenReturn(book);
         when(mapper.toBookDTO(book)).thenReturn(bookDTO);
 

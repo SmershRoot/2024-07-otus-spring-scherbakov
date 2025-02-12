@@ -15,8 +15,12 @@ import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +29,10 @@ public class BookController {
     private final BookMapper mapper;
 
     private final BookRepository repository;
+
+    private final AuthorRepository authorRepository;
+
+    private final GenreRepository genreRepository;
 
     private final CommentRepository commentRepository;
 
@@ -44,9 +52,9 @@ public class BookController {
     public Mono<BookDTO> create(
             @RequestBody @Valid BookDTO book
     ) {
-        var entity = mapper.toBook(book);
-        var mono = repository.save(entity);
-        return mono.map(mapper::toBookDTO);
+        var entity = Mono.just(mapper.toBook(book));
+        return checkBook(entity)
+                .flatMap(repository::save).map(mapper::toBookDTO);
     }
 
     @PutMapping("/book/{id}")
@@ -54,11 +62,12 @@ public class BookController {
             @PathVariable String id,
             @RequestBody @Valid BookDTO book
     ) {
-        var entity = findById(id);
-        return entity.flatMap(e ->  {
+        var entity = findById(id).map(e ->  {
             mapper.updateBookFromDto(e, book);
-            return repository.save(e);
-        }).map(mapper::toBookDTO);
+            return e;
+        });
+        return checkBook(entity)
+                .flatMap(repository::save).map(mapper::toBookDTO);
     }
 
     @DeleteMapping("/book/{id}")
@@ -66,6 +75,27 @@ public class BookController {
         return repository.deleteById(id).then(commentRepository.deleteAllByBookId(id));
     }
 
+    public Mono<Book> checkBook(Mono<Book> book) {
+        return book.flatMap(entity -> Flux.fromIterable(entity.getGenres())
+                        .flatMap(g -> genreRepository.findById(g.getId())
+                                .switchIfEmpty(
+                                        Mono.error(
+                                                new EntityNotFoundException("Genre with id not found")))
+                        )
+                        .filter(Objects::nonNull)
+                        .next().then(Mono.just(entity))
+                )
+                .flatMap(entity -> {
+                    var author = entity.getAuthor();
+                    if (Objects.isNull(author)) {
+                        return Mono.error(new RuntimeException("Author is null"));
+                    }
+
+                    return authorRepository.findById(author.getId())
+                            .switchIfEmpty(Mono.error(new EntityNotFoundException("Author with id not found")))
+                            .then(Mono.just(entity));
+                });
+    }
 
     private Mono<Book> findById(String id) {
         return repository.findById(id)
