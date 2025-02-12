@@ -41,7 +41,7 @@ public class SecurityBookControllerTest {
     @MockBean
     private BookService bookService;
 
-    @ParameterizedTest(name = "{0} {1} for user {2} with roles {3} should return {4}")
+    @ParameterizedTest(name = "{0} {1} for user {2} with roles {3} should return {4} status and redirect = {5} or {6}")
     @MethodSource("getTestData")
     public void shouldReturnExpectedStatus(
             String method,
@@ -49,6 +49,8 @@ public class SecurityBookControllerTest {
             String username,
             String[] roles,
             ResultMatcher status,
+            String redirectedUrl,
+            String redirectedUrlPattern,
             BookDTO content) throws Exception {
         var request = method2RequestBuilder(method, uri);
 
@@ -65,7 +67,13 @@ public class SecurityBookControllerTest {
             request.contentType(APPLICATION_JSON_VALUE).content(mapper.writeValueAsString(content));
         }
 
-        mockMvc.perform(request).andExpect(status);
+        var resultActions = mockMvc.perform(request).andExpect(status);
+        if (Objects.nonNull(redirectedUrl)) {
+            resultActions.andExpect(redirectedUrl(redirectedUrl));
+        }
+        if (Objects.nonNull(redirectedUrlPattern)) {
+            resultActions.andExpect(redirectedUrlPattern(redirectedUrlPattern));
+        }
     }
 
     private MockHttpServletRequestBuilder method2RequestBuilder(String method, String url) {
@@ -82,8 +90,11 @@ public class SecurityBookControllerTest {
 
         return Stream.of(
                             /*number, method, url, username, roles, status, redirectedUrl, redirectedUrlPattern, content, returnedObject*/
-                Arguments.of("post","/book", "allUser", new String[]{"USER"}, status().isForbidden(), books.get(0)),
-                Arguments.of("post","/book", "editor1", new String[]{"EDITOR"}, status().isOk(), books.get(0))
+                Arguments.of("get", "/book", null, null, status().isFound(), null, "**/login", null),
+                Arguments.of("get", "/book", "allUser", new String[]{"USER"}, status().isOk(), null, null, null),
+
+                Arguments.of("post","/book", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0)),
+                Arguments.of("post","/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0))
         );
     }
 

@@ -1,4 +1,4 @@
-package ru.otus.hw.controllers.security;
+package ru.otus.hw.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.TestData;
-import ru.otus.hw.controllers.BookController;
 import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
