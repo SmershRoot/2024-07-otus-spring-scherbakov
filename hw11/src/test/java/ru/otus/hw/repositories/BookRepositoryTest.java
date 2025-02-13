@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import reactor.test.StepVerifier;
 import ru.otus.hw.TestData;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -104,7 +105,7 @@ class BookRepositoryTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteBook() {
         assertThat(repository.findById("1").blockOptional()).isPresent();
-        repository.deleteById("1").subscribe();
+        repository.deleteById("1").block();
         assertThat(repository.findById("1").blockOptional()).isEmpty();
     }
 
