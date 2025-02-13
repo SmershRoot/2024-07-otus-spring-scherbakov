@@ -41,9 +41,10 @@ public class SecurityBookControllerTest {
     @MockBean
     private BookService bookService;
 
-    @ParameterizedTest(name = "{0} {1} for user {2} with roles {3} should return {4} status and redirect = {5} or {6}")
+    @ParameterizedTest(name = "{0}. {1} {2} for user {3} with roles {4} should return {5} status and redirect = {6} or {7}")
     @MethodSource("getTestData")
     public void shouldReturnExpectedStatus(
+            int number,
             String method,
             String uri,
             String username,
@@ -90,11 +91,21 @@ public class SecurityBookControllerTest {
 
         return Stream.of(
                             /*number, method, url, username, roles, status, redirectedUrl, redirectedUrlPattern, content, returnedObject*/
-                Arguments.of("get", "/book", null, null, status().isFound(), null, "**/login", null),
-                Arguments.of("get", "/book", "allUser", new String[]{"USER"}, status().isOk(), null, null, null),
+                Arguments.of(1, "get", "/book", null, null, status().isFound(), null, "**/login", null),
+                Arguments.of(2, "get", "/book", "allUser", new String[]{"USER"}, status().isOk(), null, null, null),
+                Arguments.of(3, "get", "/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null),
 
-                Arguments.of("post","/book", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0)),
-                Arguments.of("post","/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0))
+                Arguments.of(4, "get","/book/1", "allUser", new String[]{"USER"}, status().isOk(), null, null, null),
+                Arguments.of(5, "get","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null),
+
+                Arguments.of(6, "post","/book", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0)),
+                Arguments.of(7, "post","/book", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0)),
+
+                Arguments.of(8, "put","/book/1", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, books.get(0)),
+                Arguments.of(9, "put","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, books.get(0)),
+
+                Arguments.of(10, "delete","/book/1", "allUser", new String[]{"USER"}, status().isForbidden(), null, null, null),
+                Arguments.of(19, "delete","/book/1", "editor1", new String[]{"EDITOR"}, status().isOk(), null, null, null)
         );
     }
 

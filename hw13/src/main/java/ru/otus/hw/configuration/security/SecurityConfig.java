@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/", "/images/**", "/public/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/book").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers(HttpMethod.PUT, "/book/*").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers(HttpMethod.DELETE, "/book/*").hasAnyRole("ADMIN", "EDITOR")
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .exceptionHandling((exceptionHandling) ->
