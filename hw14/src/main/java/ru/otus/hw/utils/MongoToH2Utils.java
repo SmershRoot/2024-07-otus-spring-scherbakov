@@ -8,6 +8,7 @@ import ru.otus.hw.repositories.h2.GenreJpaRepository;
 import ru.otus.hw.repositories.h2.CommentJpaRepository;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
@@ -24,17 +25,17 @@ public class MongoToH2Utils {
 
     private final AtomicLong index = new AtomicLong(0);
 
-    private final ConcurrentHashMap<Long, String> authorTempIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, String> authorTempIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<String, Long> authorMapMongoAndJpaIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Long> authorMapMongoAndJpaIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<Long, String> genreTempIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, String> genreTempIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<String, Long> genreMapMongoAndJpaIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Long> genreMapMongoAndJpaIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<Long, String> bookTempIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, String> bookTempIds = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<String, Long> bookMapMongoAndJpaIds = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Long> bookMapMongoAndJpaIds = new ConcurrentHashMap<>();
 
 
     public void h2ClearAll() {
