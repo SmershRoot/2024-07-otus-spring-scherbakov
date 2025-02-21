@@ -9,12 +9,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Book {
 
-    String title;
+    private String title;
 
-    DamageLevel damageLevel;
+    private DamageLevel damageLevel;
 
-    double worth;
+    private double worth;
 
-    boolean isDamaged;
+    private boolean isDamaged;
 
 }

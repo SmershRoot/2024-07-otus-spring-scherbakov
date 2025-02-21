@@ -11,8 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class BooksFromHuman {
 
-    String fio;
+    private String fio;
 
-    Set<Book> books;
+    private Set<Book> books;
 
 }

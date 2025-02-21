@@ -11,14 +11,21 @@ import java.util.random.RandomGenerator;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AssistantLibrarianServiceImpl {
+public class AssistantLibrarianServiceImpl implements AssistantLibrarianService {
 
     private static final DamageLevel[] DAMAGE_LEVELS = {DamageLevel.LOW, DamageLevel.MEDIUM, DamageLevel.HIGH};
 
-    public Book checkBooksForDamage(Book book) {
-        if(book.isDamaged()) {
+    @Override
+    public Book assessDamageLevelBook(Book book) {
+        if (book.isDamaged()) {
             book.setDamageLevel(DAMAGE_LEVELS[RandomGenerator.getDefault().nextInt(0, 3)]);
         }
+        return book;
+    }
+
+    @Override
+    public Book putBookOnShelf(Book book) {
+        log.info("{}: {}", "Put book on shelf", book.getTitle());
         return book;
     }
 

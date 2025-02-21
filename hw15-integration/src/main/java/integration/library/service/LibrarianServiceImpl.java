@@ -41,16 +41,16 @@ public class LibrarianServiceImpl implements LibrarianService {
     }
 
     private BooksFromHuman generateBooksFromHuman(int i) {
-        return new BooksFromHuman("Human" + i, generateBooks());
+        return new BooksFromHuman("Human" + i, generateBooks(i));
     }
 
-    private Set<Book> generateBooks() {
+    private Set<Book> generateBooks(int iHuman) {
         var books = new HashSet<Book>();
-        for(int i = 0; i < RandomGenerator.getDefault().nextInt(1, 5); i++) {
+        for (int i = 0; i < RandomGenerator.getDefault().nextInt(1, 5); i++) {
             boolean isDamaged = RandomGenerator.getDefault().nextBoolean();
             double worth = RandomGenerator.getDefault().nextDouble(0,1);
 
-            Book book = new Book("Book" + i, null, worth, isDamaged);
+            Book book = new Book("Book" + +iHuman + "_" + i, null, worth, isDamaged);
             books.add(book);
         }
 
