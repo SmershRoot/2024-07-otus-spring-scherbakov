@@ -19,4 +19,8 @@ export class BookServiceService {
     return this.http.post<Book>(this.bookUrl, book);
   }
 
+  public deleteById(id: number) {
+    return this.http.delete<Book>(this.bookUrl + '/' + id);
+  }
+
 }

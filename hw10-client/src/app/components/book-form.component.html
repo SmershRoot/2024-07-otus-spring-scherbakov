@@ -1,6 +1,6 @@
 <div class="card my-5">
   <div class="card-body">
-    <!--form (ngSubmit)="onSubmit()" #bookForm="ngForm">
+    <form (ngSubmit)="onSubmit()" #bookForm="ngForm">
       <div class="form-group">
         <label for="title">Title</label>
         <input type="text" [(ngModel)]="book.title"
@@ -10,19 +10,17 @@
                placeholder="Enter title"
                required #title="ngModel">
       </div>
-      <div [hidden]="!title.pristine" class="alert alert-danger">Title is required</div>
-      <div class="form-group">
+      <!--div class="form-group">
         <label for="email">Email</label>
-        <input type="text" [(ngModel)]="book.email"
+        <input type="text" [(ngModel)]="user.email"
                class="form-control"
                id="email"
                name="email"
                placeholder="Enter your email address"
                required #email="ngModel">
         <div [hidden]="!email.pristine" class="alert alert-danger">Email is required</div>
-      </div>
-      <button type="submit" [disabled]="!bookForm.form.valid"
-              class="btn btn-info">Submit</button>
-    </form-->
+      </div-->
+      <button type="submit" class="btn btn-info">Submit</button>
+    </form>
   </div>
 </div>

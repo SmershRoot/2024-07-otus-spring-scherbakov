@@ -7,6 +7,7 @@
         <th scope="col">Title</th>
         <th scope="col">Author</th>
         <th scope="col">Genres</th>
+        <th scope="col">DELETE</th>
       </tr>
       </thead>
       <tbody>
@@ -19,6 +20,7 @@
           <div>{{genre.name}}</div>
         }
         </td>
+        <td><button class="btn btn-primary" (click)="deleteBook(book.id)">Delete</button></td>
       </tr>
       }
       </tbody>
