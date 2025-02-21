@@ -37,7 +37,6 @@ public class LibrarianServiceImpl implements LibrarianService {
                 log.info("{}, RESULT {}", booksFromHuman.getFio(), result);
             });
         }
-        pool.shutdown();
     }
 
     private BooksFromHuman generateBooksFromHuman(int i) {
