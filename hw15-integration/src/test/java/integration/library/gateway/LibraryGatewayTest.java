@@ -21,7 +21,7 @@ public class LibraryGatewayTest {
     @Test
     @DisplayName("All books are not damaged")
     void processLibrarian_allBooksAreNotDamagedTest() {
-        var expectedResult = "Fine: 0.0";
+        var expectedResult = "Fine: 0.00";
 
         Set<Book> books = new HashSet<>();
         for (int i = 0; i < 10; i++) {

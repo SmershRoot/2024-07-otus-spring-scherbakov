@@ -15,6 +15,7 @@ import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.scheduling.PollerMetadata;
 
 import java.util.List;
+import java.util.Locale;
 
 @Configuration
 public class IntegrationConfig {
@@ -46,7 +47,7 @@ public class IntegrationConfig {
     ) {
         return IntegrationFlow
                 .from(seriousDamageChannel())
-                .<Double, String>transform(res -> "Fine: " + res.toString() + " with warning")
+                .<Double, String>transform(res -> "Fine: " + String.format(Locale.US, "%.2f",res) + " with warning")
                 .get();
     }
 
@@ -72,7 +73,7 @@ public class IntegrationConfig {
                 .aggregate()
                 .<List<Double>, Double>transform(fines -> fines.stream().mapToDouble(Double::doubleValue).sum())
                 .<Double, Boolean>route(res -> res > 100,
-                        res -> res.subFlowMapping(false, sf -> sf.handle((p, h) -> "Fine: " + p))
+                        res -> res.subFlowMapping(false, sf -> sf.handle((p, h) -> "Fine: " + String.format(Locale.US, "%.2f", p)))
                                 .subFlowMapping(true, sf -> sf.channel(seriousDamageChannel()))
                 )
                 .channel(resultChannel())
