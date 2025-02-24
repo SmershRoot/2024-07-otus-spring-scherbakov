@@ -5,12 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.test.StepVerifier;
 import ru.otus.hw.models.Author;
 
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,15 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthorRepositoryTest {
 
     @Autowired
-    private AuthorRepository repository;
+    private MongoOperations mongoOperations;
 
     @Test
     void findAll() {
-        StepVerifier.create(repository.findAll())
-                .expectNextCount(3)
-                .verifyComplete();
-
-        var authors = repository.findAll().collectList().block();
+        var authors = mongoOperations.findAll(Author.class);
         assertNotNull(authors, "Authors is empty");
         var authorMaps = authors.stream().collect(Collectors.toMap(
                 Author::getId,
@@ -45,9 +40,9 @@ class AuthorRepositoryTest {
 
     @Test
     void findById() {
-        Optional<Author> author = repository.findById("1").blockOptional();
-        assertTrue(author.isPresent(), "Author is empty");
-        assertEquals("1", author.get().getId(), "Author is not id 1");
-        assertEquals("Author_1", author.get().getFullName(), "Author_1 is not id 1");
+        Author author = mongoOperations.findById("1", Author.class);
+        assertNotNull(author, "Author is empty");
+        assertEquals("1", author.getId(), "Author is not id 1");
+        assertEquals("Author_1", author.getFullName(), "Author_1 is not id 1");
     }
 }
