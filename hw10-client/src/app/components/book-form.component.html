@@ -9,17 +9,14 @@
                name="title"
                placeholder="Enter title"
                required #title="ngModel">
+        <label>Author</label>
+        <p>
+          <p-select [options]="authors" [(ngModel)]="book.author"
+                   [ngModelOptions]="{ standalone: true }"
+                   optionLabel="fullName" placeholder="Select author" class="w-full md:w-56"></p-select>
+        </p>
+
       </div>
-      <!--div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" [(ngModel)]="user.email"
-               class="form-control"
-               id="email"
-               name="email"
-               placeholder="Enter your email address"
-               required #email="ngModel">
-        <div [hidden]="!email.pristine" class="alert alert-danger">Email is required</div>
-      </div-->
       <button type="submit" class="btn btn-info">Submit</button>
     </form>
   </div>

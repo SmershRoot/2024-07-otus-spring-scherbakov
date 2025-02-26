@@ -11,12 +11,20 @@ export class BookServiceService {
       this.bookUrl = '/library-api/book';
   }
 
-    public findAll(): Observable<Book[]> {
+  public findAll(): Observable<Book[]> {
     return this.http.get<Book[]>(this.bookUrl);
   }
 
+  public findById(id: number): Observable<Book> {
+    return this.http.get<Book>(this.bookUrl + '/' + id);
+  }
+
   public save(book: Book) {
-    return this.http.post<Book>(this.bookUrl, book);
+    if (book.id === 0) {
+      return this.http.post<Book>(this.bookUrl, book);
+    } else {
+      return this.http.put<Book>(this.bookUrl + '/' + book.id, book);
+    }
   }
 
   public deleteById(id: number) {
