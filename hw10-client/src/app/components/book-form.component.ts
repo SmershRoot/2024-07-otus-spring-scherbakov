@@ -6,13 +6,19 @@ import { BookServiceService } from '../service/book-service.service';
 import {FormsModule} from '@angular/forms';
 import {AuthorService} from '../service/author.service';
 import {Select} from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
+import {GenreService} from "../service/genre.service";
+import {Genre} from "../model/genre";
+
+
 
 
 @Component({
   selector: 'app-book-form',
   imports: [
-    FormsModule,
-    Select
+      FormsModule,
+      Select,
+      MultiSelectModule
   ],
   templateUrl: './book-form.component.html',
   styleUrl: './book-form.component.css'
@@ -21,13 +27,14 @@ export class BookFormComponent {
 
   book: Book= new Book(0, '', {} as Author, []);
   authors: Author[] = [];
-  authorsOptions!:Author[];
+  genres: Genre[] = [];
 
   constructor(
       private route: ActivatedRoute,
       private router: Router,
       private bookService: BookServiceService,
-      private authorService: AuthorService
+      private authorService: AuthorService,
+      private genreService: GenreService
   ) {
         let bookId = this.route.snapshot.params['id'];
         if (bookId !== "new") {
@@ -39,8 +46,11 @@ export class BookFormComponent {
         authorService.findAll().subscribe(data => {
           this.authors = data;
         });
-        console.log("TEST: " + this.book.title);
-        console.log("TEST: " + this.authors.length);
+
+      genreService.findAll().subscribe(data => {
+          this.genres = data;
+      })
+
   }
 
 

@@ -15,6 +15,14 @@
                    [ngModelOptions]="{ standalone: true }"
                    optionLabel="fullName" placeholder="Select author" class="w-full md:w-56"></p-select>
         </p>
+        <label>Genres</label>
+        <p>
+          <div class="card flex justify-center">
+              <p-multiselect [options]="genres" [(ngModel)]="book.genres" optionLabel="name"
+                             [ngModelOptions]="{ standalone: true }"
+                             placeholder="Select genres" [maxSelectedLabels]="3" styleClass="w-full md:w-80" />
+          </div>
+
 
       </div>
       <button type="submit" class="btn btn-info">Submit</button>
