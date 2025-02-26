@@ -5,7 +5,7 @@ import { Author} from '../model/author';
 import { BookServiceService } from '../service/book-service.service';
 import {FormsModule} from '@angular/forms';
 import {AuthorService} from '../service/author.service';
-import {Select} from 'primeng/select';
+import {Select, SelectModule} from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 import {GenreService} from "../service/genre.service";
 import {Genre} from "../model/genre";
