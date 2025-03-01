@@ -41,11 +41,3 @@ management:
   health:
     defaults:
       enabled: true
-
-logging:
-  file: #deprecated
-    name: ./logs/library-api.log
-  level:
-    root: info
-  pattern:
-    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n'
