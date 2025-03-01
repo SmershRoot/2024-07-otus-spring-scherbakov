@@ -17,9 +17,6 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
-  data:
-    rest:
-      base-path: /data-rest
 
 server:
   port: 8080
