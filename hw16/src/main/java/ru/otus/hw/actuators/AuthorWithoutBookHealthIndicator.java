@@ -10,7 +10,6 @@ import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Author;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,6 +18,7 @@ import java.util.Objects;
 public class AuthorWithoutBookHealthIndicator implements HealthIndicator {
 
     private final BookRepository bookRepository;
+
     private final AuthorRepository authorRepository;
 
     @Override
@@ -35,7 +35,8 @@ public class AuthorWithoutBookHealthIndicator implements HealthIndicator {
         }
 
         Map<String, Object> detailMessages = new HashMap<>();
-        authorsWithoutBook.forEach(a -> detailMessages.put("Author without book", a.getFullName()));
+        authorsWithoutBook.forEach(a ->
+                detailMessages.put("Author without book", a.getFullName()));
         return Health.down()
                 .withDetails(detailMessages)
                 .build();
