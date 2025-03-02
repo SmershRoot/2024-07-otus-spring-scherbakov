@@ -1,0 +1,35 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: bookstore
+
+  datasource:
+    url: jdbc:h2:mem:maindb
+  h2:
+    console.enabled: true
+  liquibase:
+    enabled: true
+    changeLog: classpath:db/changelog/db.changelog-master.yml
+
+  batch:
+    job:
+      enabled: false
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+
+mongock:
+  #  runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - ru.otus.hw.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
