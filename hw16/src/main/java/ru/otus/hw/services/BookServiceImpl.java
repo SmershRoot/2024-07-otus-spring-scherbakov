@@ -7,9 +7,7 @@ import ru.otus.hw.dto.BookDTO;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.mapper.BookMapper;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
-import ru.otus.hw.repositories.GenreRepository;
 
 import java.util.List;
 
@@ -18,10 +16,6 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository repository;
-
-    private final AuthorRepository authorRepository;
-
-    private final GenreRepository genreRepository;
 
     private final BookMapper mapper;
 
