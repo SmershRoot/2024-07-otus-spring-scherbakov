@@ -7,9 +7,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
+import reactor.test.StepVerifier;
 import ru.otus.hw.TestData;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BookRepositoryTest {
 
     @Autowired
-    private MongoOperations mongoOperations;
+    private BookRepository repository;
 
     private List<Author> dbAuthors;
 
@@ -44,14 +44,16 @@ class BookRepositoryTest {
     @ParameterizedTest
     @MethodSource("getDbBooks")
     void shouldReturnCorrectBookById(Book expectedBook) {
-        var actualBook = mongoOperations.findById(expectedBook.getId(), Book.class);
-        assertThat(actualBook).isEqualTo(expectedBook);
+        var actualBook = repository.findById(expectedBook.getId()).blockOptional();
+        assertThat(actualBook).isPresent()
+                .get()
+                .isEqualTo(expectedBook);
     }
 
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        var actualBooks = mongoOperations.findAll(Book.class);
+        var actualBooks = repository.findAll().collectList().block();
         var expectedBooks = dbBooks;
 
         assertThat(actualBooks).containsExactlyInAnyOrderElementsOf(expectedBooks);
@@ -64,12 +66,14 @@ class BookRepositoryTest {
     void shouldSaveNewBook() {
         var expectedBook = new Book(null, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
-        var returnedBook = mongoOperations.save(expectedBook);
+        var returnedBook = repository.save(expectedBook).block();
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() != null)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(mongoOperations.findById(returnedBook.getId(), Book.class))
+        assertThat(repository.findById(returnedBook.getId()).blockOptional())
+                .isPresent()
+                .get()
                 .isEqualTo(returnedBook);
     }
 
@@ -80,15 +84,19 @@ class BookRepositoryTest {
         var expectedBook = new Book("1", "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
-        assertThat(mongoOperations.findById(expectedBook.getId(), Book.class))
+        assertThat(repository.findById(expectedBook.getId()).blockOptional())
+                .isPresent()
+                .get()
                 .isNotEqualTo(expectedBook);
 
-        var returnedBook = mongoOperations.save(expectedBook);
+        var returnedBook = repository.save(expectedBook).block();
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() != null)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(mongoOperations.findById(returnedBook.getId(), Book.class))
+        assertThat(repository.findById(returnedBook.getId()).blockOptional())
+                .isPresent()
+                .get()
                 .isEqualTo(returnedBook);
     }
 
@@ -96,10 +104,9 @@ class BookRepositoryTest {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteBook() {
-        var expectedBook = mongoOperations.findById("1", Book.class);
-        assert expectedBook != null;
-        mongoOperations.remove(expectedBook);
-        assertThat(mongoOperations.findById("1", Book.class)).isNull();
+        assertThat(repository.findById("1").blockOptional()).isPresent();
+        repository.deleteById("1").block();
+        assertThat(repository.findById("1").blockOptional()).isEmpty();
     }
 
     private static List<Book> getDbBooks() {
