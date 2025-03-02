@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.otus.hw.dto.CommentDTO;
 import ru.otus.hw.services.CommentService;
@@ -35,7 +36,7 @@ public class CommentController {
     @PostMapping("/book/{bookId}/comment")
     public CommentDTO create(
             @PathVariable Long bookId,
-            CommentDTO commentDTO
+            @RequestBody CommentDTO commentDTO
     ) {
         return service.create(bookId, commentDTO);
     }
@@ -43,7 +44,7 @@ public class CommentController {
     @PutMapping("/book/{bookId}/comment/{id}")
     public CommentDTO update(
             @PathVariable Long id,
-            CommentDTO commentDTO
+            @RequestBody CommentDTO commentDTO
     ) {
         return service.update(id, commentDTO);
     }
