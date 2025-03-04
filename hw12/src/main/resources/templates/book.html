@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book</title>
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+<body>
+    <form th:object="${book}" th:method="post" th:action="@{/books/save(id=${book.id})}">
+        <a th:href="@{/books}">All books</a><br/>
+
+        <div th:if="${#fields.hasErrors()}">
+            <span class="validationError">
+                Please correct the problems below and resubmit.
+            </span>
+        </div>
+
+        <h1 th:text="*{title}"></h1>
+
+        <label>Title: </label>
+        <input type="text" th:field="*{title}" required/>
+        <span class="validationError"
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}">Title Error</span>
+        <br/>
+
+        <label>Author: </label>
+        <label>
+            <select th:field="*{authorId}" required>
+                <option th:each="author : ${all_authors}"
+                        th:value="${author.id}"
+                        th:text="${author.fullName}"
+                        th:selected="${author.id == book.authorId}"></option>
+            </select>
+        </label>
+        <br/>
+        <fieldset>
+            <legend>Genres:</legend>
+            <span class="validationError"
+                  th:if="${#fields.hasErrors('genreIds')}"
+                  th:errors="*{genreIds}">Genres error</span>
+            <ul>
+                <li th:each="genre : ${all_genres}">
+                    <input type="checkbox" th:field="*{genreIds}" th:value="${genre.id}"
+                           th:checked="${#lists.contains(book.genreIds, genre.id)}"/>
+                    <label th:for="${#ids.prev('genreIds')}"
+                           th:text="${genre.name}">genreName</label>
+                </li>
+            </ul>
+        </fieldset>
+        <br/>
+        <input type="submit" value="Save"/>
+    </form>
+</body>
+</html>
