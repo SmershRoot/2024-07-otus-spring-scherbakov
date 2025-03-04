@@ -7,10 +7,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import reactor.test.StepVerifier;
-import ru.otus.hw.TestData;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -27,17 +26,20 @@ class BookRepositoryTest {
     @Autowired
     private BookRepository repository;
 
+    @Autowired
+    private MongoOperations mongoOperations;
+
     private List<Author> dbAuthors;
 
     private List<Genre> dbGenres;
 
-    private List<Book> dbBooks;
+    private static List<Book> dbBooks;
 
     @BeforeEach
     void setUp() {
-        dbAuthors = TestData.getDbAuthors();
-        dbGenres = TestData.getDbGenres();
-        dbBooks = TestData.getDbBooks(dbAuthors, dbGenres);
+        dbAuthors = mongoOperations.findAll(Author.class);
+        dbGenres = mongoOperations.findAll(Genre.class);
+        dbBooks = mongoOperations.findAll(Book.class);
     }
 
     @DisplayName("должен загружать книгу по id")
@@ -66,15 +68,15 @@ class BookRepositoryTest {
     void shouldSaveNewBook() {
         var expectedBook = new Book(null, "BookTitle_10500", dbAuthors.get(0),
                 List.of(dbGenres.get(0), dbGenres.get(2)));
-        var returnedBook = repository.save(expectedBook).block();
-        assertThat(returnedBook).isNotNull()
+        var actualBook = repository.save(expectedBook).block();
+        assertThat(actualBook).isNotNull()
                 .matches(book -> book.getId() != null)
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(expectedBook);
 
-        assertThat(repository.findById(returnedBook.getId()).blockOptional())
+        assertThat(repository.findById(actualBook.getId()).blockOptional())
                 .isPresent()
                 .get()
-                .isEqualTo(returnedBook);
+                .isEqualTo(actualBook);
     }
 
     @DisplayName("должен сохранять измененную книгу")
@@ -84,6 +86,8 @@ class BookRepositoryTest {
         var expectedBook = new Book("1", "BookTitle_10500", dbAuthors.get(2),
                 List.of(dbGenres.get(4), dbGenres.get(5)));
 
+        assertThat(mongoOperations.findById(expectedBook.getId(), Book.class))
+                .isNotEqualTo(expectedBook);
         assertThat(repository.findById(expectedBook.getId()).blockOptional())
                 .isPresent()
                 .get()
@@ -97,7 +101,8 @@ class BookRepositoryTest {
         assertThat(repository.findById(returnedBook.getId()).blockOptional())
                 .isPresent()
                 .get()
-                .isEqualTo(returnedBook);
+                .isEqualTo(returnedBook)
+                .isEqualTo(mongoOperations.findById(expectedBook.getId(), Book.class));
     }
 
     @DisplayName("должен удалять книгу по id ")
@@ -105,11 +110,14 @@ class BookRepositoryTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void shouldDeleteBook() {
         assertThat(repository.findById("1").blockOptional()).isPresent();
+        var expectedBook = mongoOperations.findById("1", Book.class);
+        assert expectedBook != null;
         repository.deleteById("1").block();
         assertThat(repository.findById("1").blockOptional()).isEmpty();
+        assertThat(mongoOperations.findById("1", Book.class)).isNull();
     }
 
     private static List<Book> getDbBooks() {
-        return TestData.getDbBooks();
+        return dbBooks;
     }
 }

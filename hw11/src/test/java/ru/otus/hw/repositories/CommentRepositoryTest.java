@@ -1,11 +1,13 @@
 package ru.otus.hw.repositories;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.test.context.TestPropertySource;
 import ru.otus.hw.TestData;
 import ru.otus.hw.models.Book;
@@ -22,6 +24,16 @@ class CommentRepositoryTest {
     @Autowired
     private CommentRepository repository;
 
+    @Autowired
+    private MongoOperations mongoOperations;
+
+    private static List<Book> dbBooks;
+
+    @BeforeEach
+    void setUp() {
+        dbBooks = mongoOperations.findAll(Book.class);
+    }
+
     @DisplayName("получение всех комментариев по книге")
     @ParameterizedTest
     @MethodSource("getDbBooks")
@@ -35,7 +47,7 @@ class CommentRepositoryTest {
     }
 
     private static List<Book> getDbBooks() {
-        return TestData.getDbBooks();
+        return dbBooks;
     }
 
 }
