@@ -1,8 +1,9 @@
 package ru.otus.hw.repositories;
 
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Репозиторий для работы с авторами")
 @DataMongoTest
 @TestPropertySource(properties = "mongock.enabled=true")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CommentRepositoryTest {
 
     @Autowired
@@ -29,7 +31,7 @@ class CommentRepositoryTest {
 
     private static List<Book> dbBooks;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         dbBooks = mongoOperations.findAll(Book.class);
     }
