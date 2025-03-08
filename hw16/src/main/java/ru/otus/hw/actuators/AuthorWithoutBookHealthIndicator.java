@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.repositories.AuthorRepository;
+import ru.otus.hw.services.AuthorService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthorWithoutBookHealthIndicator implements HealthIndicator {
 
-    private final AuthorRepository authorRepository;
+    private final AuthorService authorService;
 
     @Override
     public Health health() {
-        var authorsWithoutBook = authorRepository.findAllWithNoBooks();
+        var authorsWithoutBook = authorService.findAllWithoutBooks();
 
         if (authorsWithoutBook.isEmpty()) {
             return Health.up()
