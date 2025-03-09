@@ -1,0 +1,31 @@
+<div class="card my-5">
+  <div class="card-body">
+    <form (ngSubmit)="onSubmit()" #bookForm="ngForm">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" [(ngModel)]="book.title"
+               class="form-control"
+               id="title"
+               name="title"
+               placeholder="Enter title"
+               required #title="ngModel">
+        <label>Author</label>
+        <p>
+          <p-select [options]="authors" [(ngModel)]="book.author"
+                   [ngModelOptions]="{ standalone: true }"
+                   optionLabel="fullName" placeholder="Select author" class="w-full md:w-56"></p-select>
+        </p>
+        <label>Genres</label>
+        <p>
+          <div class="card flex justify-center">
+              <p-multiselect [options]="genres" [(ngModel)]="book.genres" optionLabel="name"
+                             [ngModelOptions]="{ standalone: true }"
+                             placeholder="Select genres" [maxSelectedLabels]="3" styleClass="w-full md:w-80" />
+          </div>
+
+
+      </div>
+      <button type="submit" class="btn btn-info">Submit</button>
+    </form>
+  </div>
+</div>

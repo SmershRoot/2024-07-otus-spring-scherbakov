@@ -1,0 +1,6 @@
+p-select {
+  border-radius: .25rem;
+  width: 100%;
+  border: 1px solid rgba(0,0,0,.125);
+  padding: .375rem .75rem;
+}
