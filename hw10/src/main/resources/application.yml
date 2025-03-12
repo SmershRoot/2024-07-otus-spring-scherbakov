@@ -1,8 +1,12 @@
 spring:
   application:
     name=library-api
+#  datasource:
+#    url: jdbc:h2:mem:maindb
   datasource:
-    url: jdbc:h2:mem:maindb
+    url: jdbc:postgresql://localhost:5433/library-db
+    username: admin
+    password: password
   h2:
     console:
       enabled: true
